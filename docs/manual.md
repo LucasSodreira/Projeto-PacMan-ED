@@ -342,12 +342,16 @@ make test-basic
 ./test_structs.exe
 
 # Teste das funcionalidades avançadas
-make test-advanced  
+make test-advanced
 ./test_advanced.exe
 
 # Teste completo integrado
 make test-complete
 ./test_complete.exe
+
+# Teste Player + Maze integrado
+gcc -o test_player test/test_player.c src/player.c src/maze.c src/utils.c src/logger.c src/stats.c src/queue.c -std=c99 -Wall -I src
+./test_player.exe
 ```
 
 ## 🏆 Boa Sorte!
@@ -357,7 +361,3 @@ Agora você está pronto para enfrentar o labirinto com todas as ferramentas ava
 **Que a força esteja com você, Pac-Man!** 🎮👾
 
 ---
-
-**Manual versão 1.0**  
-**Última atualização:** Junho 2025  
-**Criado por:** Equipe Pac-Man ED

@@ -24,8 +24,8 @@ Projeto-PacMan-ED/
 │   ├── stats.c/h                # ✅ Sistema de estatísticas (Pessoa 1)
 │   ├── logger.c/h               # ✅ Sistema de logging (Pessoa 1)
 │   ├── config.h                 # ✅ Configurações centralizadas (Pessoa 1)
-│   ├── maze.c/h                 # 🔄 Sistema de mapas (Pessoa 2)
-│   ├── player.c/h               # 🔄 Lógica do Pac-Man (Pessoa 3)
+│   ├── maze.c/h                 # ✅ Sistema de mapas (Pessoa 2)
+│   ├── player.c/h               # ✅ Lógica do Pac-Man (Pessoa 3)
 │   ├── ghost.c/h                # 🔄 Lógica dos fantasmas (Pessoa 4)
 │   ├── game.c/h                 # 🔄 Loop principal (Pessoa 4)
 │   └── main.c                   # 🔄 Função main (Pessoa 4)
@@ -34,7 +34,8 @@ Projeto-PacMan-ED/
 ├── test/                        # Testes
 │   ├── test_structs.c           # ✅ Teste básico das estruturas (Pessoa 1)
 │   ├── test_advanced.c          # ✅ Teste avançado (Pessoa 1)
-│   └── test_complete.c          # ✅ Teste completo de integração (Pessoa 1)
+│   ├── test_complete.c          # ✅ Teste completo de integração (Pessoa 1)
+│   └── test_player.c            # ✅ Teste integrado Player + Maze (Pessoa 3)
 ├── docs/                        # Documentação
 │   ├── README.md                # Este arquivo
 │   ├── manual.md                # Manual do usuário
@@ -100,6 +101,9 @@ gcc -o test_advanced test/test_advanced.c src/queue.c src/utils.c
 # Teste completo (requer todos os módulos)
 gcc -o test_complete test/test_complete.c src/queue.c src/utils.c src/stats.c src/logger.c
 
+# Teste integrado Player + Maze
+gcc -o test_player test/test_player.c src/player.c src/maze.c src/utils.c src/logger.c src/stats.c src/queue.c -std=c99 -Wall -I src
+
 # Jogo completo (quando estiver pronto)
 gcc -o pacman src/*.c
 ```
@@ -108,8 +112,9 @@ gcc -o pacman src/*.c
 ```bash
 # Executar testes
 ./test_structs      # Teste básico
-./test_advanced     # Teste avançado  
+./test_advanced     # Teste avançado
 ./test_complete     # Teste completo
+./test_player       # Teste Player + Maze integrado
 
 # Executar jogo (quando estiver pronto)
 ./pacman
@@ -119,6 +124,7 @@ gcc -o pacman src/*.c
 - **Teste Básico:** 4/4 cenários passaram
 - **Teste Avançado:** 6/6 categorias testadas com sucesso
 - **Teste Completo:** 4/4 sistemas integrados funcionando
+- **Teste Player:** 4/4 funcionalidades do jogador testadas
 - **Cobertura:** 100% das funcionalidades implementadas testadas
 
 ### Como Executar Testes
@@ -139,6 +145,10 @@ gcc -o test_advanced test/test_advanced.c src/queue.c src/utils.c
 
 gcc -o test_complete test/test_complete.c src/queue.c src/utils.c src/stats.c src/logger.c
 ./test_complete
+
+# Teste integrado Player + Maze
+gcc -o test_player test/test_player.c src/player.c src/maze.c src/utils.c src/logger.c src/stats.c src/queue.c -std=c99 -Wall -I src
+./test_player
 ```
 ---
 
@@ -152,30 +162,10 @@ gcc -o test_complete test/test_complete.c src/queue.c src/utils.c src/stats.c sr
 | **Sistema Logging** | 100% ✅ | `logger.c/h` | 15 | Integrado |
 | **Sistema Stats** | 100% ✅ | `stats.c/h` | 20 | Integrado |
 | **Configuração** | 100% ✅ | `config.h`, `Makefile` | - | - |
-| **Renderização** | 0% 🔄 | `maze.c/h` | - | - |
-| **Lógica Jogador** | 0% 🔄 | `player.c/h` | - | - |
+| **Renderização** | 100% ✅ | `maze.c/h` | 6 | 1 teste |
+| **Lógica Jogador** | 100% ✅ | `player.c/h` | 5 | 1 teste |
 | **IA Fantasmas** | 0% 🔄 | `ghost.c/h`, `game.c/h` | - | - |
 
-## 🎯 Funcionalidades Avançadas Disponíveis
-
-### Para Pessoa 2 (Mapas):
-- ✅ `is_valid_position()` - Validação de coordenadas
-- ✅ `Position` struct e funções relacionadas
-- ✅ Sistema de logging para debug de renderização
-- ✅ Constantes de configuração em `config.h`
-
-### Para Pessoa 3 (Jogador):
-- ✅ `get_next_position()` - Calcular próxima posição
-- ✅ `direction_to_string()` - Debug de movimentos
-- ✅ `manhattan_distance()` - Cálculos de distância
-- ✅ Sistema de estatísticas para tracking de performance
-
-### Para Pessoa 4 (IA/Integração):
-- ✅ Fila FIFO completa com 14 operações
-- ✅ `find_ghost_in_queue()` - Localizar fantasmas
-- ✅ `count_active_ghosts()` - Contar fantasmas ativos
-- ✅ Sistema de profiling para otimização da IA
-- ✅ Logging específico para movimentação de fantasmas
 
 ## 📝 Convenções de Código
 

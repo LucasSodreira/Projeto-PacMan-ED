@@ -1,55 +1,63 @@
-#include <stdio.h>
 #include "player.h"
 
-void init_pacman(Pacman *p, int x, int y) {
-    p->x = x;
-    p->y = y;
-    p->score = 0;
-    p->lives = 3;
+// Função auxiliar para converter input em direção (baseado em WASD)
+Direction get_direction_from_input(char input) {
+    switch (input) {
+        case 'w': case 'W': return NORTH;
+        case 'a': case 'A': return WEST;
+        case 's': case 'S': return SOUTH;
+        case 'd': case 'D': return EAST;
+        default: return -1;  // direção inválida
+    }
 }
 
-void handle_movement(Pacman *p, int newX, int newY, char maze[MAP_HEIGHT][MAP_WIDTH]) {
-    char dest = maze[newY][newX];
-
-    if (dest == '#') return; // Não atravessa parede
-
-    if (dest == '.') {
-        p->score++;
-        maze[newY][newX] = ' ';
-    }
-
-    // Atualiza posição no labirinto
-    maze[p->y][p->x] = ' ';
-    p->x = newX;
-    p->y = newY;
-    maze[p->y][p->x] = 'P';
+void player_init(Player* player, Position start_pos) {
+    player->pos = start_pos;
+    player->score = 0;
+    player->lives = DEFAULT_LIVES;
+    player->symbol = 'P';
 }
 
-void move_pacman(Pacman *p, char direction, char maze[MAP_HEIGHT][MAP_WIDTH]) {
-    int dx = 0, dy = 0;
-
-    switch (direction) {
-        case 'w': dy = -1; break;
-        case 's': dy = 1; break;
-        case 'a': dx = -1; break;
-        case 'd': dx = 1; break;
-        default: return;
-    }
-
-    int newX = p->x + dx;
-    int newY = p->y + dy;
-
-    if (newX < 0 || newY < 0 || newX >= MAP_WIDTH || newY >= MAP_HEIGHT)
+void player_move(Player* player, GameState* game, char input) {
+    Direction dir = get_direction_from_input(input);
+    if (dir < 0 || !is_valid_direction(dir)) {
+        // Entrada inválida, não move
         return;
+    }
 
-    handle_movement(p, newX, newY, maze);
-}
+    Position next_pos = get_next_position(player->pos, dir);
 
-int check_victory(char maze[MAP_HEIGHT][MAP_WIDTH]) {
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            if (maze[y][x] == '.') return 0;
+    // Verifica se posição é válida no mapa
+    if (!is_valid_position(next_pos.x, next_pos.y, game->map_width, game->map_height)) {
+        return;
+    }
+
+    // Verifica se não é parede ('#' por exemplo)
+    if (game->map[next_pos.y][next_pos.x] == '#') {
+        return;
+    }
+
+    // Move o player
+    player->pos = next_pos;
+
+    // Verifica se coletou ponto ('.' no mapa)
+    if (game->map[next_pos.y][next_pos.x] == '.') {
+        player->score += POINTS_PER_DOT;
+        game->map[next_pos.y][next_pos.x] = ' '; // remove ponto do mapa
+        game->collected_dots++;
+
+        // Se atingiu pontos para vida extra
+        if (player->score % POINTS_FOR_EXTRA_LIFE == 0) {
+            player->lives++;
         }
     }
-    return 1;
+}
+
+int player_has_won(Player* player, GameState* game) {
+    return (game->collected_dots == game->total_dots);
+}
+
+void player_lose_life(Player* player, Position start_pos) {
+    player->lives--;
+    player->pos = start_pos;
 }

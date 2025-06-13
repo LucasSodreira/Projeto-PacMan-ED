@@ -1,24 +1,18 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "../maze/maze.h"  // Define o mapa (parede, ponto, etc.)
+#include "utils.h"
 
-typedef struct {
-    int x, y;          // Posição atual do Pac-Man
-    int score;         // Pontuação
-    int lives;         // Vidas restantes
-} Pacman;
+// Inicializa o player (posição e valores iniciais)
+void player_init(Player* player, Position start_pos);
 
-// Inicializa o Pac-Man com posição, pontuação e vidas
-void init_pacman(Pacman *p, int x, int y);
+// Move o player de acordo com o input, atualizando score e vidas
+void player_move(Player* player, GameState* game, char input);
 
-// Move o Pac-Man na direção desejada
-void move_pacman(Pacman *p, char direction, char maze[MAP_HEIGHT][MAP_WIDTH]);
+// Checa se o player venceu (coletou todos os pontos)
+int player_has_won(Player* player, GameState* game);
 
-// Verifica se todos os pontos foram coletados (condição de vitória)
-int check_victory(char maze[MAP_HEIGHT][MAP_WIDTH]);
+// Processa perda de vida (decrementa e reseta posição se houver vidas)
+void player_lose_life(Player* player, Position start_pos);
 
-// Atualiza o estado do Pac-Man com base na casa para onde ele se moveu
-void handle_movement(Pacman *p, int newX, int newY, char maze[MAP_HEIGHT][MAP_WIDTH]);
-
-#endif
+#endif // PLAYER_H

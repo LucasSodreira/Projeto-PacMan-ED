@@ -15,6 +15,7 @@
 #define POINTS_FOR_EXTRA_LIFE 1000
 
 // Configurações de vidas
+#define DEFAULT_LIVES 3
 #define STARTING_LIVES 3
 #define MAX_LIVES 5
 

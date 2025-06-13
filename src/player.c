@@ -1,62 +1,63 @@
 #include "player.h"
-#include "logger.h"
-#include "stats.h"
-#include "utils.h"
-#include <stdio.h>
 
-void init_player(Player *player, Position start_pos) {
+// Função auxiliar para converter input em direção (baseado em WASD)
+Direction get_direction_from_input(char input) {
+    switch (input) {
+        case 'w': case 'W': return NORTH;
+        case 'a': case 'A': return WEST;
+        case 's': case 'S': return SOUTH;
+        case 'd': case 'D': return EAST;
+        default: return -1;  // direção inválida
+    }
+}
+
+void player_init(Player* player, Position start_pos) {
     player->pos = start_pos;
-    player->dir = NONE;
     player->score = 0;
-    player->lives = INITIAL_LIVES;
-    player->moves = 0;
+    player->lives = DEFAULT_LIVES;
+    player->symbol = 'P';
 }
 
-void update_player(Player *player, char **maze) {
-    char input = get_user_input();
-
-    Direction new_dir = get_direction_from_input(input);
-    if (!is_valid_direction(new_dir)) {
-        LOG_W("Direção inválida: %c", input);
+void player_move(Player* player, GameState* game, char input) {
+    Direction dir = get_direction_from_input(input);
+    if (dir < 0 || !is_valid_direction(dir)) {
+        // Entrada inválida, não move
         return;
     }
 
-    Position next_pos = get_next_position(player->pos, new_dir);
-    if (!is_valid_position(maze, next_pos)) {
-        LOG_D("Movimento bloqueado por parede em (%d, %d)", next_pos.x, next_pos.y);
+    Position next_pos = get_next_position(player->pos, dir);
+
+    // Verifica se posição é válida no mapa
+    if (!is_valid_position(next_pos.x, next_pos.y, game->map_width, game->map_height)) {
         return;
     }
 
-    // Movimento válido
-    player->dir = new_dir;
+    // Verifica se não é parede ('#' por exemplo)
+    if (game->map[next_pos.y][next_pos.x] == '#') {
+        return;
+    }
+
+    // Move o player
     player->pos = next_pos;
-    player->moves++;
-    LOG_D("Jogador moveu para (%d, %d)", next_pos.x, next_pos.y);
 
-    // Coleta de ponto
-    if (maze[next_pos.y][next_pos.x] == '.') {
-        player->score += 10;
-        maze[next_pos.y][next_pos.x] = ' ';
-        LOG_I("Ponto coletado! Score: %d", player->score);
-        register_point_collected();  // stats.h
-    }
+    // Verifica se coletou ponto ('.' no mapa)
+    if (game->map[next_pos.y][next_pos.x] == '.') {
+        player->score += POINTS_PER_DOT;
+        game->map[next_pos.y][next_pos.x] = ' '; // remove ponto do mapa
+        game->collected_dots++;
 
-    // TODO: Verificação de colisão com fantasmas, perder vida, etc.
-}
-
-bool check_victory(char **maze) {
-    for (int y = 0; maze[y] != NULL; y++) {
-        for (int x = 0; maze[y][x] != '\0'; x++) {
-            if (maze[y][x] == '.') {
-                return false;
-            }
+        // Se atingiu pontos para vida extra
+        if (player->score % POINTS_FOR_EXTRA_LIFE == 0) {
+            player->lives++;
         }
     }
-    LOG_I("Vitória! Todos os pontos foram coletados.");
-    return true;
 }
 
-void display_player_status(const Player *player) {
-    printf("Score: %d | Vidas: %d | Movimentos: %d\n",
-           player->score, player->lives, player->moves);
+int player_has_won(Player* player, GameState* game) {
+    return (game->collected_dots == game->total_dots);
+}
+
+void player_lose_life(Player* player, Position start_pos) {
+    player->lives--;
+    player->pos = start_pos;
 }

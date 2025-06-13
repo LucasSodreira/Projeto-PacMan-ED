@@ -2,29 +2,17 @@
 #define PLAYER_H
 
 #include "utils.h"
-#include "maze.h"
 
-// Define quantas vidas o Pac-Man começa
-#define INITIAL_LIVES 3
+// Inicializa o player (posição e valores iniciais)
+void player_init(Player* player, Position start_pos);
 
-typedef struct {
-    Position pos;
-    Direction dir;
-    int score;
-    int lives;
-    int moves;
-} Player;
+// Move o player de acordo com o input, atualizando score e vidas
+void player_move(Player* player, GameState* game, char input);
 
-// Inicializa o jogador na posição inicial do labirinto
-void init_player(Player *player, Position start_pos);
+// Checa se o player venceu (coletou todos os pontos)
+int player_has_won(Player* player, GameState* game);
 
-// Atualiza o jogador com base na entrada do usuário e estado do labirinto
-void update_player(Player *player, char **maze);
+// Processa perda de vida (decrementa e reseta posição se houver vidas)
+void player_lose_life(Player* player, Position start_pos);
 
-// Verifica se o jogador venceu (todos os pontos foram coletados)
-bool check_victory(char **maze);
-
-// Imprime visualmente a HUD de status (vidas, score, etc)
-void display_player_status(const Player *player);
-
-#endif
+#endif // PLAYER_H

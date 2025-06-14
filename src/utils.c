@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "config.h"
 
 #ifdef _WIN32
     #include <windows.h>

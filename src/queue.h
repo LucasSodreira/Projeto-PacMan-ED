@@ -1,6 +1,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
-
+ 
+#include "ghost.h"
 #include "utils.h"  // Inclui as definições de Position e Ghost
 
 // Nó da fila

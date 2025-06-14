@@ -18,17 +18,19 @@ else
     MKDIR = mkdir -p
 endif
 
-# Arquivos fonte (implementados pela Pessoa 1)
-SOURCES = $(SRCDIR)/queue.c $(SRCDIR)/utils.c $(SRCDIR)/stats.c $(SRCDIR)/logger.c
+# Arquivos fonte
+SOURCES = $(SRCDIR)/queue.c $(SRCDIR)/utils.c $(SRCDIR)/stats.c $(SRCDIR)/logger.c \
+          $(SRCDIR)/game.c $(SRCDIR)/ghost.c $(SRCDIR)/player.c $(SRCDIR)/maze.c
 OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 # Executáveis de teste
 TEST_BASIC = $(BINDIR)/test_structs$(EXE_EXT)
 TEST_ADVANCED = $(BINDIR)/test_advanced$(EXE_EXT)
 TEST_COMPLETE = $(BINDIR)/test_complete$(EXE_EXT)
+TEST_GAME = $(BINDIR)/test_game_integration$(EXE_EXT)
 
 # Alvo padrão
-all: dirs $(TEST_BASIC) $(TEST_ADVANCED) $(TEST_COMPLETE)
+all: dirs $(TEST_BASIC) $(TEST_ADVANCED) $(TEST_COMPLETE) $(TEST_GAME)
 
 # Criar diretórios necessários
 dirs:
@@ -50,28 +52,20 @@ $(TEST_ADVANCED): $(OBJECTS) $(TESTDIR)/test_advanced.c
 $(TEST_COMPLETE): $(OBJECTS) $(TESTDIR)/test_complete.c
 	$(CC) $(CFLAGS) $(OBJECTS) $(TESTDIR)/test_complete.c -o $@
 
+# Teste de integração do jogo
+$(TEST_GAME): $(OBJECTS) $(TESTDIR)/test_game_integration.c
+	$(CC) $(CFLAGS) $(OBJECTS) $(TESTDIR)/test_game_integration.c -o $@
+
 # Executar testes
-test: $(TEST_BASIC) $(TEST_ADVANCED) $(TEST_COMPLETE)
-	@echo "=== Executando teste básico ==="
+test: all
 	$(TEST_BASIC)
-	@echo ""
-	@echo "=== Executando teste avançado ==="
 	$(TEST_ADVANCED)
-	@echo ""
-	@echo "=== Executando teste completo ==="
 	$(TEST_COMPLETE)
+	$(TEST_GAME)
 
-# Teste individual básico
-test-basic: $(TEST_BASIC)
-	$(TEST_BASIC)
-
-# Teste individual avançado  
-test-advanced: $(TEST_ADVANCED)
-	$(TEST_ADVANCED)
-
-# Teste individual completo
-test-complete: $(TEST_COMPLETE)
-	$(TEST_COMPLETE)
+# Teste de integração específico
+test-game: $(TEST_GAME)
+	$(TEST_GAME)
 
 # Compilação com debug
 debug: CFLAGS += -DDEBUG -O0

@@ -30,7 +30,7 @@
 #define MAX_LEVELS 10
 
 // Configurações dos fantasmas
-#define MAX_GHOSTS_PER_LEVEL 4
+#define MAX_GHOSTS 4
 #define GHOST_RESPAWN_TIME 5     // Segundos para reaparecer
 
 // Símbolos do jogo

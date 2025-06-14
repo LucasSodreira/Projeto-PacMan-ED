@@ -63,5 +63,7 @@ void destroy_profile_data(ProfileData* profile);
 // Funções auxiliares de análise
 void analyze_queue_performance(QueueStats* stats);
 void generate_performance_report(QueueStats* queue_stats, GameStats* game_stats);
+// Função utilitária para atualizar score (stub)
+void update_game_stats_score(GameStats* stats, int score);
 
 #endif // STATS_H

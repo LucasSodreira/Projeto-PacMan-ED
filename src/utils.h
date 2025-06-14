@@ -15,8 +15,8 @@
 
 // Definições de constantes
 #define MAX_MAP_SIZE 50
-#define MAX_GHOSTS 10
 #define MAX_NAME_SIZE 50
+// #define MAX_GHOSTS 4  // Use apenas a definição em config.h
 
 // ===== CONSTANTES =====
 #define DEFAULT_LIVES 3
@@ -65,13 +65,8 @@ typedef struct {
 } Player;
 
 // Estrutura de um Fantasma
-typedef struct {
-    Position pos;          // Posição atual
-    Direction direction;   // Direção atual
-    int ghost_id;         // ID único
-    char symbol;          // Símbolo no mapa ('F', 'G', 'B', 'R')
-    int is_active;        // Se está ativo no jogo
-} Ghost;
+// Definição completa está em ghost.h
+// (Removido typedef para evitar conflito)
 
 // Estrutura do Estado do Jogo
 typedef struct {

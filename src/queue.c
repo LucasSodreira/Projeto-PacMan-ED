@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "ghost.h"
 #include "queue.h"
 
 // Criar uma nova fila

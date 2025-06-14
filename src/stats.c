@@ -304,10 +304,16 @@ void generate_performance_report(QueueStats* queue_stats, GameStats* game_stats)
     }
     
     if (game_stats) {
-        print_game_stats(game_stats);
+        print_detailed_game_stats(game_stats);
     }
     
     printf("Relatório gerado em: ");
     time_t now = time(NULL);
     printf("%s", ctime(&now));
+}
+
+
+// Função stub para update_game_stats_score
+void update_game_stats_score(GameStats* stats, int score) {
+    if (stats) stats->highest_score = score;
 }

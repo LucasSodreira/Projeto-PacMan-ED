@@ -4,19 +4,30 @@
 #include "logger.h"
 
 
-static const char simple_map[MAZE_HEIGHT][MAZE_WIDTH] = {
-    {'#','#','#','#','#','#','#','#','#','#'},
-    {'#','.','.','#','.','.','.','.','.','#'},
-    {'#','.','.','#','.','.','#','.','.','#'},
-    {'#','.','.','.','.','.','.','.','.','#'},
-    {'#','#','#','#','#','#','#','#','#','#'}
-};
+// Exemplo de mapa simples para inicialização (ajustado para MAX_MAP_WIDTH/MAX_MAP_HEIGHT)
+static char simple_map[MAX_MAP_HEIGHT][MAX_MAP_WIDTH];
+
+static void fill_simple_map() {
+    for (int y = 0; y < MAX_MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAX_MAP_WIDTH; x++) {
+            if (y == 0 || y == MAX_MAP_HEIGHT-1 || x == 0 || x == MAX_MAP_WIDTH-1) {
+                simple_map[y][x] = '#';
+            } else if ((x+y)%7 == 0) {
+                simple_map[y][x] = '.';
+            } else {
+                simple_map[y][x] = ' ';
+            }
+        }
+    }
+}
 
 void maze_init(Maze* maze) {
     maze->width = MAZE_WIDTH;
     maze->height = MAZE_HEIGHT;
     maze->total_points = 0;
-    
+
+    fill_simple_map();
+
     // Copiar mapa e contar pontos
     for (int y = 0; y < MAZE_HEIGHT; y++) {
         for (int x = 0; x < MAZE_WIDTH; x++) {
@@ -26,8 +37,8 @@ void maze_init(Maze* maze) {
             }
         }
     }
-    
-    LOG_I("Labirinto inicializado: %dx%d com %d pontos", 
+
+    LOG_I("Labirinto inicializado: %dx%d com %d pontos",
           MAZE_WIDTH, MAZE_HEIGHT, maze->total_points);
 }
 
@@ -88,4 +99,12 @@ int maze_count_points(const Maze* maze) {
         }
     }
     return count;
+}
+// Função stub para load_maze (retorna um mapa vazio)
+char* load_maze(int level) {
+    int size = MAX_MAP_WIDTH * MAX_MAP_HEIGHT;
+    char* maze = (char*)malloc(size);
+    if (!maze) return NULL;
+    for (int i = 0; i < size; i++) maze[i] = (i % MAX_MAP_WIDTH == 0 || i % MAX_MAP_WIDTH == MAX_MAP_WIDTH-1 || i < MAX_MAP_WIDTH || i >= size-MAX_MAP_WIDTH) ? '#' : ' ';
+    return maze;
 }

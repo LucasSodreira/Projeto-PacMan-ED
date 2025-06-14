@@ -1,0 +1,13 @@
+[2025-06-14 20:27:16] [INFO] logger_init(): Logger inicializado - Arquivo: test_game.log, Nível mínimo: DEBUG
+[2025-06-14 20:27:16] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (3,4)
+[2025-06-14 20:27:16] [DEBUG] logger_dot_collected(): 🔴 Ponto coletado em (3,4) - Pontos: 10
+[2025-06-14 20:27:16] [WARNING] logger_collision_detected(): 💥 COLISÃO detectada! Jogador (3,4) vs Fantasma 1
+[2025-06-14 20:27:16] [INFO] logger_game_started(): ═══════════════════════════
+[2025-06-14 20:27:16] [INFO] logger_game_started():     JOGO INICIADO
+[2025-06-14 20:27:16] [INFO] logger_game_started(): ═══════════════════════════
+[2025-06-14 20:27:16] [INFO] logger_game_ended(): ═══════════════════════════
+[2025-06-14 20:27:16] [INFO] logger_game_ended():     JOGO FINALIZADO
+[2025-06-14 20:27:16] [INFO] logger_game_ended(): Pontuação final: 1000
+[2025-06-14 20:27:16] [INFO] logger_game_ended(): Tempo jogado: 300 segundos
+[2025-06-14 20:27:16] [INFO] logger_game_ended(): ═══════════════════════════
+[2025-06-14 20:27:16] [INFO] logger_shutdown(): Encerrando logger - Total de mensagens: 12

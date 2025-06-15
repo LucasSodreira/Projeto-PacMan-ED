@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdarg.h>  // Para va_list
 #include <math.h>    // Para abs()
+#include <time.h>    // Para srand() e time()
 
 #ifdef _WIN32
     #include <windows.h>  // Para Sleep()
@@ -13,10 +14,12 @@
     #include <unistd.h>   // Para usleep()
 #endif
 
-// Definições de constantes
+// Incluir config.h para constantes globais
+#include "config.h"
+
+// Definições de constantes (usar config.h quando possível)
 #define MAX_MAP_SIZE 50
 #define MAX_NAME_SIZE 50
-// #define MAX_GHOSTS 4  // Use apenas a definição em config.h
 
 // ===== CONSTANTES =====
 #define DEFAULT_LIVES 3
@@ -64,9 +67,9 @@ typedef struct {
     char symbol;           // Símbolo no mapa ('P')
 } Player;
 
-// Estrutura de um Fantasma
-// Definição completa está em ghost.h
-// (Removido typedef para evitar conflito)
+// Forward declaration apenas - definição completa em ghost.h
+struct Ghost;
+typedef struct Ghost Ghost;
 
 // Estrutura do Estado do Jogo
 typedef struct {
@@ -76,6 +79,7 @@ typedef struct {
     Player player;                         // Dados do jogador
     int total_dots;                        // Total de pontos no mapa
     int collected_dots;                    // Pontos coletados
+    Ghost* ghosts;                         // Array de fantasmas
     int num_ghosts;                        // Número de fantasmas
     GameStatus status;                     // Status atual do jogo
     int level;                            // Nível atual

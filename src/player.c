@@ -44,6 +44,7 @@ void player_move(Player* player, Maze* maze, char input) {
         return;
     }
 
+    // Verificar se há ponto para coletar ANTES de mover
     if (maze_has_point(maze, next_pos)) {
         player->score += POINTS_PER_DOT;
         maze_remove_point(maze, next_pos);
@@ -55,13 +56,16 @@ void player_move(Player* player, Maze* maze, char input) {
     LOG_D("Jogador moveu para (%d,%d)", next_pos.x, next_pos.y);
     logger_log_player_action("moveu", next_pos.x, next_pos.y);
 
-    if (player->score % POINTS_FOR_EXTRA_LIFE == 0) {
+    // Verificar vida extra
+    if (player->score > 0 && player->score % POINTS_FOR_EXTRA_LIFE == 0) {
         player->lives++;
         LOG_I("Vida extra! Total: %d vidas", player->lives);
     }
 }
 
 int player_has_won(Player* player, GameState* game) {
+    // Silenciar warning - player será usado futuramente
+    (void)player;
     return (game->collected_dots == game->total_dots);
 }
 

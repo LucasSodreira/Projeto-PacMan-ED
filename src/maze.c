@@ -43,7 +43,7 @@ void maze_init(Maze* maze) {
 }
 
 void maze_render(const Maze* maze, Player* player) {
-    clear_screen();  // ✅ Usar função da Pessoa 1
+    clear_screen();
     
     // Copiar maze para array temporário
     char display[MAZE_HEIGHT][MAZE_WIDTH];
@@ -53,20 +53,145 @@ void maze_render(const Maze* maze, Player* player) {
         }
     }
     
-    // Colocar player no display
-    display[player->pos.y][player->pos.x] = player->symbol;
-    
-    // Renderizar
-    printf("=== PAC-MAN ===\n");
-    for (int y = 0; y < MAZE_HEIGHT; y++) {
-        for (int x = 0; x < MAZE_WIDTH; x++) {
-            printf("%c", display[y][x]);
-        }
-        printf("\n");
+    // Colocar player no display (sobrescreve qualquer coisa na posição)
+    if (player->pos.x >= 0 && player->pos.x < MAZE_WIDTH && 
+        player->pos.y >= 0 && player->pos.y < MAZE_HEIGHT) {
+        display[player->pos.y][player->pos.x] = player->symbol;
     }
     
-    printf("\n📊 Score: %d | ❤️  Lives: %d | 📍 Pos: (%d,%d)\n", 
+    // Renderizar com bordas
+    printf("╔");
+    for (int x = 0; x < MAZE_WIDTH; x++) printf("═");
+    printf("╗\n");
+    
+    for (int y = 0; y < MAZE_HEIGHT; y++) {
+        printf("║");
+        for (int x = 0; x < MAZE_WIDTH; x++) {
+            char cell = display[y][x];
+            
+            // Aplicar cores baseado no símbolo
+            switch (cell) {
+                case 'P': 
+                    printf("\x1b[33m%c\x1b[0m", cell);  // Amarelo para player
+                    break;
+                case '#': 
+                    printf("\x1b[37m%c\x1b[0m", cell);  // Branco para paredes
+                    break;
+                case '.': 
+                    printf("\x1b[36m%c\x1b[0m", cell);  // Ciano para pontos
+                    break;
+                case 'F': 
+                    printf("\x1b[31m%c\x1b[0m", cell);  // Vermelho para fantasma F
+                    break;
+                case 'G': 
+                    printf("\x1b[32m%c\x1b[0m", cell);  // Verde para fantasma G
+                    break;
+                case 'B': 
+                    printf("\x1b[34m%c\x1b[0m", cell);  // Azul para fantasma B
+                    break;
+                case 'R': 
+                    printf("\x1b[35m%c\x1b[0m", cell);  // Magenta para fantasma R
+                    break;
+                default:
+                    printf("%c", cell);
+                    break;
+            }
+        }
+        printf("║\n");
+    }
+    
+    printf("╚");
+    for (int x = 0; x < MAZE_WIDTH; x++) printf("═");
+    printf("╝\n");
+    
+    printf("📊 Score: %d | ❤️  Lives: %d | 📍 Pos: (%d,%d)\n", 
            player->score, player->lives, player->pos.x, player->pos.y);
+    printf("Controles: WASD para mover, Q para sair\n");
+}
+
+// Nova função para renderizar maze com fantasmas
+void maze_render_with_ghosts(const Maze* maze, Player* player, Ghost* ghosts, int ghost_count) {
+    clear_screen();
+    
+    // Copiar maze para array temporário
+    char display[MAZE_HEIGHT][MAZE_WIDTH];
+    for (int y = 0; y < MAZE_HEIGHT; y++) {
+        for (int x = 0; x < MAZE_WIDTH; x++) {
+            display[y][x] = maze->grid[y][x];
+        }
+    }
+    
+    // Colocar fantasmas no display primeiro (para que player sobreponha se necessário)
+    for (int i = 0; i < ghost_count; i++) {
+        if (ghosts[i].is_active && 
+            ghosts[i].pos.x >= 0 && ghosts[i].pos.x < MAZE_WIDTH && 
+            ghosts[i].pos.y >= 0 && ghosts[i].pos.y < MAZE_HEIGHT) {
+            display[ghosts[i].pos.y][ghosts[i].pos.x] = ghosts[i].symbol;
+        }
+    }
+    
+    // Colocar player no display (sobrescreve fantasmas na mesma posição)
+    if (player->pos.x >= 0 && player->pos.x < MAZE_WIDTH && 
+        player->pos.y >= 0 && player->pos.y < MAZE_HEIGHT) {
+        display[player->pos.y][player->pos.x] = player->symbol;
+    }
+    
+    // Renderizar com bordas
+    printf("╔");
+    for (int x = 0; x < MAZE_WIDTH; x++) printf("═");
+    printf("╗\n");
+    
+    for (int y = 0; y < MAZE_HEIGHT; y++) {
+        printf("║");
+        for (int x = 0; x < MAZE_WIDTH; x++) {
+            char cell = display[y][x];
+            
+            // Aplicar cores baseado no símbolo
+            switch (cell) {
+                case 'P': 
+                    printf("\x1b[33m%c\x1b[0m", cell);  // Amarelo para player
+                    break;
+                case '#': 
+                    printf("\x1b[37m%c\x1b[0m", cell);  // Branco para paredes
+                    break;
+                case '.': 
+                    printf("\x1b[36m%c\x1b[0m", cell);  // Ciano para pontos
+                    break;
+                case 'F': 
+                    printf("\x1b[31m%c\x1b[0m", cell);  // Vermelho para fantasma F
+                    break;
+                case 'G': 
+                    printf("\x1b[32m%c\x1b[0m", cell);  // Verde para fantasma G
+                    break;
+                case 'B': 
+                    printf("\x1b[34m%c\x1b[0m", cell);  // Azul para fantasma B
+                    break;
+                case 'R': 
+                    printf("\x1b[35m%c\x1b[0m", cell);  // Magenta para fantasma R
+                    break;
+                default:
+                    printf("%c", cell);
+                    break;
+            }
+        }
+        printf("║\n");
+    }
+    
+    printf("╚");
+    for (int x = 0; x < MAZE_WIDTH; x++) printf("═");
+    printf("╝\n");
+    
+    printf("📊 Score: %d | ❤️  Lives: %d | 📍 Pos: (%d,%d)\n", 
+           player->score, player->lives, player->pos.x, player->pos.y);
+    
+    // Mostrar info dos fantasmas
+    printf("👻 Fantasmas: ");
+    for (int i = 0; i < ghost_count; i++) {
+        if (ghosts[i].is_active) {
+            printf("%c(%d,%d) ", ghosts[i].symbol, ghosts[i].pos.x, ghosts[i].pos.y);
+        }
+    }
+    printf("\n");
     printf("Controles: WASD para mover, Q para sair\n");
 }
 

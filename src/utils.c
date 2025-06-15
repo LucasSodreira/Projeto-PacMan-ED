@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "config.h"
+#include <time.h>    // Para srand() e time()
 
 #ifdef _WIN32
     #include <windows.h>
@@ -78,6 +78,9 @@ int is_valid_position(int x, int y, int width, int height) {
 void initialize_game_state(GameState* game) {
     if (!game) return;
     
+    // Inicializar gerador de números aleatórios
+    srand((unsigned int)time(NULL));
+    
     // Inicializar jogador
     game->player.pos.x = 1;
     game->player.pos.y = 1;
@@ -100,6 +103,10 @@ void initialize_game_state(GameState* game) {
             game->map[i][j] = ' ';
         }
     }
+    
+    // Inicializar array de fantasmas como NULL
+    game->ghosts = NULL;
+    game->num_ghosts = 0;
     
     printf("Estado do jogo inicializado!\n");
 }
@@ -255,5 +262,8 @@ void debug_log(const char* format, ...) {
         vprintf(format, args);
         va_end(args);
         printf("\n");
+    #else
+        // Silenciar warning sobre parâmetro não usado
+        (void)format;
     #endif
 }

@@ -43,7 +43,21 @@ void enqueue(Queue* queue, Ghost ghost) {
 
 // Remover fantasma do início da fila
 Ghost dequeue(Queue* queue) {
-    Ghost empty_ghost = {{-1, -1}, -1, -1, ' ', 0};  
+    // Inicializar ghost vazio com todos os campos
+    Ghost empty_ghost = {
+        .pos = {-1, -1},
+        .direction = NORTH,
+        .ghost_id = -1,
+        .symbol = ' ',
+        .state = GHOST_NORMAL,
+        .is_active = 0,
+        .target = {-1, -1},
+        .difficulty = DIFFICULTY_EASY,
+        .path_start = 0,
+        .path_end = 0,
+        .scatter_mode = 0,
+        .timer = 0
+    };
     
     if (!queue || is_empty(queue)) {
         printf("Erro: Tentativa de dequeue em fila vazia\n");
@@ -111,7 +125,21 @@ int queue_size(Queue* queue) {
 
 // Espiar o primeiro elemento sem removê-lo
 Ghost queue_peek(Queue* queue) {
-    Ghost empty_ghost = {{-1, -1}, -1, -1, ' ', 0};
+    // Inicializar ghost vazio com todos os campos
+    Ghost empty_ghost = {
+        .pos = {-1, -1},
+        .direction = NORTH,
+        .ghost_id = -1,
+        .symbol = ' ',
+        .state = GHOST_NORMAL,
+        .is_active = 0,
+        .target = {-1, -1},
+        .difficulty = DIFFICULTY_EASY,
+        .path_start = 0,
+        .path_end = 0,
+        .scatter_mode = 0,
+        .timer = 0
+    };
     
     if (!queue || is_empty(queue)) {
         printf("Aviso: Tentativa de peek em fila vazia\n");

@@ -24,7 +24,7 @@ void init_ghosts(Ghost ghosts[], int count) {
         ghosts[i].state = GHOST_NORMAL;
         ghosts[i].is_active = false; // Começam inativos; main.c ativa os do mapa.
         ghosts[i].difficulty = DIFFICULTY_MEDIUM; // Dificuldade padrão
-        ghosts[i].scatter_mode = true; // Começam em modo scatter
+        ghosts[i].scatter_mode = false; // Começam em modo CHASE (perseguindo) para serem mais agressivos
         ghosts[i].timer = 0;
         ghosts[i].path_start = 0;
         ghosts[i].path_end = 0;
@@ -102,58 +102,48 @@ Position calculate_target_position(const Ghost* ghost, const Position pacman_pos
     if (ghost->state == GHOST_EATEN) {
         return ghost->initial_pos;
     }
+    
     // Se assustado, o "alvo" é irrelevante para perseguição direta,
     // pois a lógica de movimento em calculate_next_direction é de fuga.
-    // Retornar pacman_pos aqui é um placeholder.
     if (ghost->state == GHOST_FRIGHTENED) {
         return pacman_pos;
     }
 
-    // Em modo scatter (e não assustado/comido), o alvo é o canto designado.
-    if (ghost->scatter_mode) {
+    // Para tornar os fantasmas mais agressivos, vamos simplificar:
+    // - 80% do tempo perseguem diretamente o jogador
+    // - 20% do tempo vão para modo scatter (apenas ocasionalmente)
+    int chase_probability = 80; // 80% chance de perseguir
+    
+    if ((rand() % 100) < chase_probability || !ghost->scatter_mode) {
+        // Perseguição direta com pequenas variações baseadas no ID do fantasma
+        Position target = pacman_pos;
+        
+        switch (ghost->ghost_id % MAX_GHOSTS) {
+            case 0: // Red ghost - Perseguição direta
+                break;
+                
+            case 1: // Green ghost - Mira um pouco à frente do jogador
+                // Tenta prever onde o jogador estará
+                target.x += (rand() % 3) - 1;
+                target.y += (rand() % 3) - 1;
+                break;
+                
+            case 2: // Blue ghost - Perseguição direta mais agressiva
+                break;
+                
+            case 3: // Pink ghost - Perseguição com distância mínima
+                if (manhattan_distance(ghost->pos, pacman_pos) < 3) {
+                    // Se muito perto, recua um pouco
+                    target.x = ghost->pos.x + (ghost->pos.x - pacman_pos.x);
+                    target.y = ghost->pos.y + (ghost->pos.y - pacman_pos.y);
+                }
+                break;
+        }
+        return target;
+    } else {
+        // Modo scatter ocasional
         return SCATTER_TARGETS[ghost->ghost_id % MAX_GHOSTS];
     }
-    
-    // Em modo de perseguição (CHASE)
-    Position target = pacman_pos;
-    
-    switch (ghost->ghost_id % MAX_GHOSTS) {
-        case 0: // Red ghost (Blinky) - Perseguidor direto
-            if (ghost->difficulty == DIFFICULTY_EASY) { // Menos preciso se fácil
-                target.x += (rand() % 5) - 2;
-                target.y += (rand() % 5) - 2;
-            }
-            // Em HARD ou MEDIUM, persegue diretamente (target = pacman_pos já definido)
-            break;
-            
-        case 1: // Green ghost (substituindo Pinky) - Perseguidor com variabilidade
-            if (ghost->difficulty == DIFFICULTY_HARD) {
-                target = pacman_pos; // Persegue diretamente
-            } else if (ghost->difficulty == DIFFICULTY_MEDIUM) {
-                target.x = pacman_pos.x + (rand() % 5) - 2;
-                target.y = pacman_pos.y + (rand() % 5) - 2;
-            } else { // DIFFICULTY_EASY
-                target.x = pacman_pos.x + (rand() % 9) - 4;
-                target.y = pacman_pos.y + (rand() % 9) - 4;
-            }
-            break;
-            
-        case 2: // Blue ghost (Inky) - Lógica de flanco simplificada ou perseguição
-             if (ghost->difficulty == DIFFICULTY_EASY) {
-                target = SCATTER_TARGETS[ghost->ghost_id % MAX_GHOSTS]; // Vai para o canto se fácil
-            } else { // Senão, persegue diretamente (lógica de flanco mais complexa removida para simplificar)
-                target = pacman_pos;
-            }
-            break;
-            
-        case 3: // Pink/Orange ghost (Clyde) - Persegue se perto, scatter se longe
-            if (manhattan_distance(ghost->pos, pacman_pos) > 8) { // Se longe
-                target = SCATTER_TARGETS[ghost->ghost_id % MAX_GHOSTS];
-            }
-            // Se perto, persegue diretamente (target = pacman_pos já definido)
-            break;
-    }
-    return target;
 }
 
 
@@ -172,10 +162,10 @@ bool is_valid_move_ghost(Position pos, const Maze* maze_data) {
 void update_ghost_state(Ghost* ghost, int timer_value) { // Renomeado current_time para timer_value para clareza
     (void)timer_value; // Marca como usado para evitar warning
     
-    // Lógica de Scatter/Chase
-    if (ghost->state == GHOST_NORMAL || ghost->state == GHOST_FRIGHTENED) {
-        // A cada SCATTER_CHASE_INTERVAL ticks, alterna o modo.
-        if (ghost->timer % SCATTER_CHASE_INTERVAL == 0 && ghost->timer > 0) { // ghost->timer > 0 para não alternar no tick 0
+    // Lógica de Scatter/Chase - muito menos frequente para manter os fantasmas perseguindo mais
+    if (ghost->state == GHOST_NORMAL) {
+        // A cada SCATTER_CHASE_INTERVAL * 3 ticks, alterna o modo (3x menos frequente)
+        if (ghost->timer % (SCATTER_CHASE_INTERVAL * 3) == 0 && ghost->timer > 0) {
             ghost->scatter_mode = !ghost->scatter_mode;
             LOG_D("Fantasma %d (%c) modo: %s.", ghost->ghost_id, ghost->symbol, ghost->scatter_mode ? "SCATTER" : "CHASE");
         }
@@ -184,6 +174,7 @@ void update_ghost_state(Ghost* ghost, int timer_value) { // Renomeado current_ti
     if (ghost->state == GHOST_FRIGHTENED) {
         if (ghost->timer > FRIGHTENED_MODE_DURATION) {
             ghost->state = GHOST_NORMAL;
+            ghost->scatter_mode = false; // Volta em modo CHASE (agressivo)
             ghost->timer = 0;
             LOG_D("Fantasma %d (%c) não está mais FRIGHTENED.", ghost->ghost_id, ghost->symbol);
         }

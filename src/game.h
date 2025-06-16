@@ -20,7 +20,7 @@ void draw_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, 
 
 
 // Assinatura atualizada para refletir as mudanças em game.c
-bool process_player_input(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus* game_status, char input_char);
+void process_player_input(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus* game_status, char input_char);
 
 void handle_debug_command(char input);
 void toggle_pause(GameStatus* status);

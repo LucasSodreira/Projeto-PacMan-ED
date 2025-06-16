@@ -13,43 +13,40 @@
 
 void show_title_screen(void) {
     clear_screen();
-    printf("\n");
+    printf("\n\n");
     
-    // ASCII Art do título com cores - apenas caracteres ASCII básicos
-    printf("\x1b[33;1m"); // Amarelo brilhante
-    printf("    +===============================================+\n");
-    printf("    |                                               |\n");
-    printf("    |   ######   #####   ######      ###    ###    |\n");
-    printf("    |   #    ## ##   ## ##          ####  ####     |\n");
-    printf("    |   ######  ####### ##          ## #### ##     |\n");
-    printf("    |   ##      ##   ## ##          ##  ##  ##     |\n");
-    printf("    |   ##      ##   ##  ######     ##      ##     |\n");
-    printf("    |                                               |\n");
-    printf("    |                 ###    ###  #####  ##    ##  |\n");
-    printf("    |                 ####  #### ##   ## ###   ##  |\n");
-    printf("    |                 ## #### ## ####### ####  ##  |\n");
-    printf("    |                 ##  ##  ## ##   ## ## ## ##  |\n");
-    printf("    |                 ##      ## ##   ## ##  ####  |\n");
-    printf("    |                                               |\n");
-    printf("    |                T E R M I N A L                |\n");
-    printf("    |                                               |\n");
-    printf("    |                 Versao %s                     |\n", GAME_VERSION);
-    printf("    |                                               |\n");
-    printf("    +===============================================+\n");
-    printf("\x1b[0m"); // Reset cor
+    // Título principal - simples e compatível com CMD
+    printf("    ================================================================\n");
+    printf("    |                                                              |\n");
+    printf("    |   ####    ##   ####        ###   ###   ##   ##  ##          |\n");
+    printf("    |   ##  ##  ##  ##           ## ## ## ##  ### ###  ###         |\n");
+    printf("    |   ####    ##  ##           ##  ###  ##  #######  ####        |\n");
+    printf("    |   ##      ##  ##           ##   #   ##  ## # ##  ## ##       |\n");
+    printf("    |   ##      ##   ####        ##       ##  ##   ##  ##  ##      |\n");
+    printf("    |                                                              |\n");
+    printf("    |                 TERMINAL EDITION - v1.0                     |\n");
+    printf("    |                                                              |\n");
+    printf("    ================================================================\n\n");
     
-    printf("\n");
-    printf("\x1b[36m"); // Ciano para informações
-    printf("    +---------------------------------------------+\n");
-    printf("    |               INFORMACOES                   |\n");
-    printf("    +---------------------------------------------+\n");
-    printf("    | Projeto    : %-27s |\n", GAME_TITLE);
-    printf("    | Autor      : %-27s |\n", GAME_AUTHOR);
-    printf("    | Disciplina : Estruturas de Dados           |\n");
-    printf("    +---------------------------------------------+\n");
-    printf("\x1b[0m"); // Reset cor
-    printf("\n");
-    print_instructions();
+    // Arte ASCII simples do Pac-Man
+    printf("                            .-----.\n");
+    printf("                           /       \\\n");
+    printf("                          |  O     O |\n");
+    printf("                          |     >    |\n");
+    printf("                          \\   ---   /\n");
+    printf("                           '-------'\n\n");
+    
+    // Menu de opções sem caracteres especiais
+    printf("    +---------------------------------------------------------+\n");
+    printf("    |                    MENU PRINCIPAL                      |\n");
+    printf("    +---------------------------------------------------------+\n");
+    printf("    |                                                         |\n");
+    printf("    |  [ENTER] - Iniciar Jogo                                |\n");
+    printf("    |  [I]     - Instrucoes                                  |\n");
+    printf("    |  [Q]     - Sair do Jogo                               |\n");
+    printf("    |                                                         |\n");
+    printf("    +---------------------------------------------------------+\n\n");
+      printf("    Escolha uma opcao: ");
 }
 
 void show_game_over_screen(Player* player, GameStatus game_status, int current_level) {
@@ -57,66 +54,85 @@ void show_game_over_screen(Player* player, GameStatus game_status, int current_l
     printf("\n\n");
     
     if (game_status == VICTORY) {
-        printf("\x1b[32;1m"); // Verde brilhante para vitória
-        printf("    +===================================================+\n");
-        printf("    |                                                   |\n");
-        printf("    |  ##    ## ## ########  ######  ######  ## #####  |\n");
-        printf("    |  ##    ## ##    ##    ##    ## ##   ## ####   ## |\n");
-        printf("    |  ##    ## ##    ##    ##    ## ######  ## #####  |\n");
-        printf("    |   ##  ##  ##    ##    ##    ## ##   ## ####   ## |\n");
-        printf("    |    ####   ##    ##     ######  ##   ## ## #####  |\n");
-        printf("    |                                                   |\n");
-        printf("    |                  PARABENS!                        |\n");
-        printf("    |             Voce venceu o jogo!                   |\n");
-        printf("    |                                                   |\n");
-        printf("    +===================================================+\n");
-        printf("\x1b[0m"); // Reset cor
+        // Tela de vitória sem caracteres especiais
+        printf("    ================================================================\n");
+        printf("    |                                                              |\n");
+        printf("    |    V   V  I  T T T  O O O  R R R  I   A A A    !!!          |\n");
+        printf("    |    V   V  I    T    O   O  R   R  I   A   A    !!!          |\n");
+        printf("    |    V   V  I    T    O   O  R R R  I   A A A    !!!          |\n");
+        printf("    |     V V   I    T    O   O  R   R  I   A   A                 |\n");
+        printf("    |      V    I    T    O O O  R   R  I   A   A    !!!          |\n");
+        printf("    |                                                              |\n");
+        printf("    |                      PARABENS!                              |\n");
+        printf("    |                  Voce venceu o jogo!                        |\n");
+        printf("    |                                                              |\n");
+        printf("    ================================================================\n");
     } else {
-        printf("\x1b[31;1m"); // Vermelho brilhante para game over
-        printf("    +===============================================+\n");
-        printf("    |                                               |\n");
-        printf("    |        ######   #####  ###    ### #######    |\n");
-        printf("    |       ##       ##   ## ####  #### ##         |\n");
-        printf("    |       ##   ### ####### ## #### ## #####      |\n");
-        printf("    |       ##    ## ##   ## ##  ##  ## ##         |\n");
-        printf("    |        ######  ##   ## ##      ## #######    |\n");
-        printf("    |                                               |\n");
-        printf("    |         ######  ##    ## ####### ######      |\n");
-        printf("    |        ##    ## ##    ## ##      ##   ##     |\n");
-        printf("    |        ##    ## ##    ## #####   ######      |\n");
-        printf("    |        ##    ##  ##  ##  ##      ##   ##     |\n");
-        printf("    |         ######    ####   ####### ##   ##     |\n");
-        printf("    |                                               |\n");
-        printf("    +===============================================+\n");
-        printf("\x1b[0m"); // Reset cor
+        // Tela de game over sem caracteres especiais
+        printf("    ================================================================\n");
+        printf("    |                                                              |\n");
+        printf("    |     G G G  A A A  M   M  E E E    O O O  V   V  E E E  R R R |\n");
+        printf("    |     G      A   A  M M M  E        O   O  V   V  E      R   R |\n");
+        printf("    |     G  GG  A A A  M   M  E E E    O   O  V   V  E E E  R R R |\n");
+        printf("    |     G   G  A   A  M   M  E        O   O   V V   E      R   R |\n");
+        printf("    |     G G G  A   A  M   M  E E E    O O O    V    E E E  R   R |\n");
+        printf("    |                                                              |\n");
+        printf("    |                      FIM DE JOGO                            |\n");
+        printf("    |                                                              |\n");
+        printf("    ================================================================\n");
     }
     
     printf("\n");
-    printf("\x1b[36m"); // Ciano para estatísticas
-    printf("    +---------------------------------------------+\n");
-    printf("    |            ESTATISTICAS FINAIS              |\n");
-    printf("    +---------------------------------------------+\n");
-    printf("    | Pontuacao Final : \x1b[33;1m%-12d\x1b[36m        |\n", player->score);
-    printf("    | Nivel Alcancado : \x1b[32;1m%-12d\x1b[36m        |\n", current_level);
-    printf("    | Vidas Restantes : \x1b[31;1m%-12d\x1b[36m        |\n", player->lives);
-    printf("    +---------------------------------------------+\n");
-    printf("\x1b[0m"); // Reset cor
-    printf("\n");
-    printf("\x1b[33m    Pressione ENTER para sair...\x1b[0m\n");
-    getchar();
+    printf("    +-------------------------------------------------------+\n");
+    printf("    |                   ESTATISTICAS FINAIS                |\n");
+    printf("    +-------------------------------------------------------+\n");
+    printf("    | Nivel Final Alcancado: %-26d |\n", current_level);
+    printf("    | Pontuacao Final      : %-26d |\n", player->score);
+    printf("    | Vidas Restantes      : %-26d |\n", player->lives);
+    printf("    +-------------------------------------------------------+\n");
+    printf("\n\n");
+    printf("    Pressione ENTER para sair...\n");
 }
 
 // ===== FUNÇÕES DE LÓGICA DO JOGO =====
 
 void update_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus* game_status, bool* game_over_flag, Position player_start_pos) {
-    (void)player_start_pos; // Marca como usado para evitar warning
+    (void)ghost_count; // Não usado mais, verificamos todos os fantasmas
     
     logger_log_player_action("moveu para", player->pos.x, player->pos.y);
 
-    if (check_collision_with_pacman(player, ghosts, ghost_count, player->pos)) {
-        logger_collision_detected(player->pos.x, player->pos.y, ghosts[0].ghost_id);
-        *game_status = GAME_OVER;
-        *game_over_flag = true;
+    // Verificar colisão com todos os fantasmas ativos
+    for (int i = 0; i < MAX_GHOSTS; i++) {
+        if (ghosts[i].is_active && positions_equal(ghosts[i].pos, player->pos)) {
+            logger_collision_detected(player->pos.x, player->pos.y, ghosts[i].ghost_id);
+            
+            // Se o fantasma está assustado, ele é comido
+            if (ghosts[i].state == GHOST_FRIGHTENED) {
+                ghosts[i].state = GHOST_EATEN;
+                player->score += POINTS_PER_GHOST_EATEN;
+                LOG_I("Fantasma %d comido! +%d pontos", ghosts[i].ghost_id, POINTS_PER_GHOST_EATEN);
+                return;
+            }
+            
+            // Caso contrário, jogador perde uma vida
+            player_lose_life(player, player_start_pos);
+            
+            if (player->lives <= 0) {
+                *game_status = GAME_OVER;
+                *game_over_flag = true;
+                LOG_I("Game Over - Sem vidas restantes");
+            } else {
+                LOG_I("Vida perdida! Vidas restantes: %d", player->lives);
+                // Resetar posições dos fantasmas após perder vida
+                for (int j = 0; j < MAX_GHOSTS; j++) {
+                    if (ghosts[j].is_active) {
+                        ghosts[j].pos = ghosts[j].initial_pos;
+                        ghosts[j].state = GHOST_NORMAL;
+                    }
+                }
+            }
+            return;
+        }
     }
 
     if (maze_count_points(maze_data) == 0) {
@@ -128,68 +144,135 @@ void update_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count
 void draw_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus game_status) {
     clear_screen();
     
-    printf("╔");
-    for (int i = 0; i < maze_data->width; i++) printf("═");
-    printf("╗\n");
+    // Header com informações do jogo usando caracteres ASCII simples
+    printf("    +");
+    for (int i = 0; i < maze_data->width; i++) printf("-");
+    printf("+\n");
+      // Linha de status
+    char status_buffer[200];
+    snprintf(status_buffer, sizeof(status_buffer), " Score: %d | Vidas: %d | Status: %s", 
+             player->score, player->lives, game_status_to_string(game_status));
+    
+    printf("    |%s", status_buffer);
+    
+    // Preencher o resto da linha até a largura do maze
+    int current_len = strlen(status_buffer);
+    for (int i = current_len; i < maze_data->width; i++) printf(" ");
+    printf("|\n");
+    
+    printf("    +");
+    for (int i = 0; i < maze_data->width; i++) printf("-");
+    printf("+\n");
 
+    // Renderizar o labirinto
     for (int y = 0; y < maze_data->height; y++) {
-        printf("║");
+        printf("    |");
         for (int x = 0; x < maze_data->width; x++) {
             Position current = {x, y};
-            char symbol = maze_data->grid[y][x];
-
+            char symbol = maze_data->grid[y][x];            // Verificar se há um fantasma nesta posição
             bool is_ghost = false;
-            for (int i = 0; i < ghost_count; i++) {
-                if (positions_equal(ghosts[i].pos, current)) {
-                    int color = COLOR_RESET;
-                    switch (ghosts[i].symbol) {
-                        case SYMBOL_GHOST_RED:   color = COLOR_GHOST_RED; break;
-                        case SYMBOL_GHOST_GREEN: color = COLOR_GHOST_GREEN; break;
-                        case SYMBOL_GHOST_BLUE:  color = COLOR_GHOST_BLUE; break;
-                        case SYMBOL_GHOST_PINK:  color = COLOR_GHOST_PINK; break;
-                        default: color = COLOR_RESET;
+            for (int i = 0; i < MAX_GHOSTS; i++) {
+                if (ghosts[i].is_active && positions_equal(ghosts[i].pos, current)) {
+                    // Renderizar fantasma com cor
+                    switch (ghosts[i].state) {
+                        case GHOST_FRIGHTENED:
+                            printf("%s%c%s", GHOST_FRIGHTENED_COLOR, SYMBOL_GHOST_FRIGHTENED, COLOR_RESET);
+                            break;
+                        case GHOST_EATEN:
+                            printf("%s%c%s", GHOST_EATEN_COLOR, SYMBOL_GHOST_EATEN, COLOR_RESET);
+                            break;
+                        default:
+                            // Escolher cor baseada no símbolo/ID do fantasma
+                            switch (ghosts[i].ghost_id % 4) {
+                                case 0:
+                                    printf("%s%c%s", GHOST_RED_COLOR, ghosts[i].symbol, COLOR_RESET);
+                                    break;
+                                case 1:
+                                    printf("%s%c%s", GHOST_GREEN_COLOR, ghosts[i].symbol, COLOR_RESET);
+                                    break;
+                                case 2:
+                                    printf("%s%c%s", GHOST_BLUE_COLOR, ghosts[i].symbol, COLOR_RESET);
+                                    break;
+                                case 3:
+                                    printf("%s%c%s", GHOST_PINK_COLOR, ghosts[i].symbol, COLOR_RESET);
+                                    break;
+                            }
+                            break;
                     }
-                    printf("\x1b[%dm%c\x1b[0m", color, ghosts[i].symbol);
                     is_ghost = true;
                     break;
                 }
             }
 
             if (!is_ghost) {
+                // Verificar se é a posição do jogador
                 if (positions_equal(player->pos, current)) {
-                    printf("\x1b[%dm%c\x1b[0m", COLOR_PLAYER, SYMBOL_PLAYER);
+                    printf("%s%c%s", PLAYER_COLOR, SYMBOL_PLAYER, COLOR_RESET);
                 } else {
+                    // Renderizar elementos do labirinto com cores
                     switch (symbol) {
-                        case SYMBOL_WALL: printf("\x1b[%dm█\x1b[0m", COLOR_WALL); break;
-                        case SYMBOL_DOT: printf("\x1b[%dm·\x1b[0m", COLOR_DOT); break;
-                        case SYMBOL_POWER_PELLET: printf("\x1b[%dmO\x1b[0m", COLOR_DOT); break;
-                        default: printf("%c", SYMBOL_EMPTY_SPACE); break;
+                        case SYMBOL_WALL: 
+                            printf("%s%c%s", WALL_COLOR, SYMBOL_WALL, COLOR_RESET);
+                            break;
+                        case SYMBOL_DOT: 
+                            printf("%s%c%s", DOT_COLOR, SYMBOL_DOT, COLOR_RESET);
+                            break;
+                        case SYMBOL_POWER_PELLET: 
+                            printf("%s%c%s", POWER_PELLET_COLOR, SYMBOL_POWER_PELLET, COLOR_RESET);
+                            break;
+                        default: 
+                            printf(" ");
+                            break;
                     }
                 }
             }
         }
-        printf("║\n");
-    }
-
-    printf("╚");
-    for (int i = 0; i < maze_data->width; i++) printf("═");
-    printf("╝\n");
+        printf("|\n");
+    }    // Footer
+    printf("    +");
+    for (int i = 0; i < maze_data->width; i++) printf("-");
+    printf("+\n");
     
-    printf("Score: %d | Vidas: %d | Status: %s\n", 
-           player->score, player->lives, game_status_to_string(game_status));
+    // Legenda colorida
+    printf("\n    LEGENDA: ");
+    printf("%s%c%s Pacman | ", PLAYER_COLOR, SYMBOL_PLAYER, COLOR_RESET);
+    printf("%s%c%s Parede | ", WALL_COLOR, SYMBOL_WALL, COLOR_RESET);
+    printf("%s%c%s Pontos | ", DOT_COLOR, SYMBOL_DOT, COLOR_RESET);
+    printf("%s%c%s Power-up", POWER_PELLET_COLOR, SYMBOL_POWER_PELLET, COLOR_RESET);
+    printf("\n    FANTASMAS: ");
+    printf("%s%c%s Vermelho | ", GHOST_RED_COLOR, SYMBOL_GHOST_RED, COLOR_RESET);
+    printf("%s%c%s Verde | ", GHOST_GREEN_COLOR, SYMBOL_GHOST_GREEN, COLOR_RESET);
+    printf("%s%c%s Azul | ", GHOST_BLUE_COLOR, SYMBOL_GHOST_BLUE, COLOR_RESET);
+    printf("%s%c%s Rosa", GHOST_PINK_COLOR, SYMBOL_GHOST_PINK, COLOR_RESET);
+    printf("\n    WASD - Mover | P - Pausar | Q - Sair\n");
 }
 
 // process_player_input lida com input do jogador e chama player_move.
-bool process_player_input(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus* game_status, char input_char) {
-    bool movement_attempted = false;
+void process_player_input(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus* game_status, char input_char) {
     
-    switch (toupper(input_char)) {
-        case KEY_UP:
+    switch (toupper(input_char)) {        case KEY_UP:
         case KEY_LEFT:
         case KEY_DOWN:
         case KEY_RIGHT:
             player_move(player, maze_data, input_char, ghosts, ghost_count);
-            movement_attempted = true;
+            
+            // Mover fantasmas após o movimento do jogador
+            for (int i = 0; i < MAX_GHOSTS; i++) {
+                if (ghosts[i].is_active) {
+                    Direction new_dir = calculate_next_direction(&ghosts[i], player->pos, maze_data);
+                    if (new_dir != DIR_INVALID) {
+                        Position next_pos = get_next_position(ghosts[i].pos, new_dir);
+                        if (is_valid_move_ghost(next_pos, maze_data)) {
+                            ghosts[i].pos = next_pos;
+                            ghosts[i].direction = new_dir;
+                        }
+                    }
+                    
+                    // Atualizar estado do fantasma
+                    ghosts[i].timer++;
+                    update_ghost_state(&ghosts[i], ghosts[i].timer);
+                }            }
+            
             break;
         case KEY_PAUSE:
             toggle_pause(game_status);
@@ -204,7 +287,6 @@ bool process_player_input(Player* player, Maze* maze_data, Ghost* ghosts, int gh
             handle_debug_command(input_char);
             break;
     }
-    return movement_attempted;
 }
 
 void handle_debug_command(char input) {

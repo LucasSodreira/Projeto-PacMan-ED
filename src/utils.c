@@ -2,7 +2,10 @@
 #include "utils.h"
 #include "maze.h"
 #include "logger.h"
+#include <stdio.h>   // Para printf() e getchar()
 #include <time.h>    // Para srand() e time()
+#include <string.h>  // Para memset()
+#include <stdarg.h>  // Para va_list
 
 #ifdef _WIN32
     #include <windows.h>
@@ -15,6 +18,60 @@
 
 // ===== FUNÇÕES DE SISTEMA =====
 
+#ifdef _WIN32
+void enable_utf8_support(void) {
+    // Configura codepage para Windows-1252 (compatível com CMD)
+    SetConsoleOutputCP(1252);
+    SetConsoleCP(1252);
+}
+
+void enable_ansi_colors(void) {
+    // Habilita cores ANSI no Windows 10+
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD dwMode = 0;
+    
+    // Habilita processamento de sequências ANSI para cores
+    if (GetConsoleMode(hOut, &dwMode)) {
+        dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+        SetConsoleMode(hOut, dwMode);
+    }
+    
+    // Configura modo de entrada para melhor compatibilidade
+    if (GetConsoleMode(hIn, &dwMode)) {
+        dwMode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
+        SetConsoleMode(hIn, dwMode);
+    }
+}
+
+void setup_cmd_console(void) {
+    // Configuração específica para CMD do Windows
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    
+    // Define tamanho da janela do console
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    if (GetConsoleScreenBufferInfo(hConsole, &csbi)) {
+        COORD newSize = {80, 25}; // 80 colunas, 25 linhas
+        SetConsoleScreenBufferSize(hConsole, newSize);
+    }
+    
+    // Define título da janela
+    SetConsoleTitle("PAC-MAN TERMINAL - v1.0");
+    
+    // Habilita cores ANSI
+    enable_ansi_colors();
+    
+    // Configura codepage
+    enable_utf8_support();
+}
+#endif
+
+void setup_console(void) {
+    #ifdef _WIN32
+    setup_cmd_console();
+    #endif
+}
+
 void clear_screen(void) {
     #ifdef _WIN32
         system("cls");
@@ -24,40 +81,68 @@ void clear_screen(void) {
 }
 
 void print_instructions(void) {
-    printf("\x1b[35;1m"); // Magenta brilhante para título das instruções
-    printf("    +===============================================+\n");
-    printf("    |                                               |\n");
-    printf("    |              I N S T R U C O E S              |\n");
-    printf("    |                                               |\n");
-    printf("    +===============================================+\n");
-    printf("\x1b[0m\n"); // Reset cor
+    printf("\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |                          CONTROLES                          |\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |  [W]  - Mover para CIMA                                     |\n");
+    printf("    |  [S]  - Mover para BAIXO                                    |\n");
+    printf("    |  [A]  - Mover para ESQUERDA                                 |\n");
+    printf("    |  [D]  - Mover para DIREITA                                  |\n");
+    printf("    |  [P]  - Pausar/Continuar                                    |\n");
+    printf("    |  [Q]  - Sair do jogo                                        |\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |                        COMO JOGAR                           |\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |  * Colete todos os pontos (.) para passar de nivel          |\n");
+    printf("    |  * Evite os fantasmas (F, G, B, R)                          |\n");
+    printf("    |  * Colete power pellets (O) para temporariamente            |\n");
+    printf("    |    deixar os fantasmas vulneraveis                          |\n");
+    printf("    |  * Ganhe pontos extras completando niveis rapidamente       |\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |                       PONTUACAO                             |\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |  Ponto pequeno (.)     : 10 pontos                          |\n");
+    printf("    |  Power Pellet (O)      : 50 pontos                          |\n");
+    printf("    +--------------------------------------------------------------+\n");
+}
+
+void show_game_controls(void) {
+    printf("\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |                         CONTROLES                           |\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |  [W]  - Mover para CIMA                                     |\n");
+    printf("    |  [S]  - Mover para BAIXO                                    |\n");
+    printf("    |  [A]  - Mover para ESQUERDA                                 |\n");
+    printf("    |  [D]  - Mover para DIREITA                                  |\n");
+    printf("    |  [P]  - PAUSAR/RETOMAR o jogo                               |\n");
+    printf("    |  [Q]  - SAIR DO JOGO                                        |\n");
+    printf("    +--------------------------------------------------------------+\n");
     
-    printf("\x1b[32;1m"); // Verde brilhante para controles
-    printf("    +---------------------------------------------+\n");
-    printf("    |                 CONTROLES                   |\n");
-    printf("    +---------------------------------------------+\n");
-    printf("\x1b[0m"); // Reset cor
-    printf("    | \x1b[37;1m%c\x1b[0m - Mover para CIMA                      |\n", KEY_UP);
-    printf("    | \x1b[37;1m%c\x1b[0m - Mover para BAIXO                     |\n", KEY_DOWN);
-    printf("    | \x1b[37;1m%c\x1b[0m - Mover para ESQUERDA                  |\n", KEY_LEFT);
-    printf("    | \x1b[37;1m%c\x1b[0m - Mover para DIREITA                   |\n", KEY_RIGHT);
-    printf("    | \x1b[37;1m%c\x1b[0m - PAUSAR/RETOMAR                       |\n", KEY_PAUSE);
-    printf("    | \x1b[37;1m%c\x1b[0m - SAIR DO JOGO                         |\n", KEY_QUIT);
-    printf("    +---------------------------------------------+\n\n");
+    printf("\n");
     
-    printf("\x1b[34;1m"); // Azul brilhante para símbolos
-    printf("    +---------------------------------------------+\n");
-    printf("    |                 SIMBOLOS                    |\n");
-    printf("    +---------------------------------------------+\n");
-    printf("\x1b[0m"); // Reset cor
-    printf("    | \x1b[33;1m%c\x1b[0m - Pac-Man (VOCE)                       |\n", SYMBOL_PLAYER);
-    printf("    | \x1b[31;1m%c\x1b[0m/\x1b[32;1m%c\x1b[0m/\x1b[34;1m%c\x1b[0m/\x1b[35;1m%c\x1b[0m - Fantasmas                  |\n", 
-           SYMBOL_GHOST_RED, SYMBOL_GHOST_GREEN, SYMBOL_GHOST_BLUE, SYMBOL_GHOST_PINK);
-    printf("    | \x1b[37;1m%c\x1b[0m - Parede                               |\n", SYMBOL_WALL);
-    printf("    | \x1b[36;1m%c\x1b[0m - Ponto para coletar                   |\n", SYMBOL_DOT);
-    printf("    | (espaco) - Caminho livre                   |\n");
-    printf("    +---------------------------------------------+\n\n");
+    // Seção de símbolos
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |                         SIMBOLOS                            |\n");
+    printf("    +--------------------------------------------------------------+\n");
+    printf("    |  C  - Pac-Man (VOCE)                                        |\n");
+    printf("    |  F/G/B/R - Fantasmas                                        |\n");
+    printf("    |  #  - Parede                                                |\n");
+    printf("    |  .  - Ponto para coletar                                    |\n");
+    printf("    |  O  - Power Pellet (deixa fantasmas azuis)                  |\n");
+    printf("    |     - Caminho livre                                         |\n");
+    printf("    +--------------------------------------------------------------+\n");
     
+    printf("\n");
+    printf("    Pressione qualquer tecla para começar...\n");
+}
+
+void show_game_objective(void) {
     printf("\x1b[33;1m"); // Amarelo brilhante para objetivo
     printf("    +---------------------------------------------+\n");
     printf("    |                 OBJETIVO                    |\n");

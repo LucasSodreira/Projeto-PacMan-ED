@@ -1,35 +1,122 @@
-[2025-06-16 00:46:40] [INFO] logger_init(): Logger inicializado - Arquivo: game.log, Nível mínimo: DEBUG
-[2025-06-16 00:46:40] [INFO] logger_game_started(): ═══════════════════════════
-[2025-06-16 00:46:40] [INFO] logger_game_started():     JOGO INICIADO
-[2025-06-16 00:46:40] [INFO] logger_game_started(): ═══════════════════════════
-[2025-06-16 00:46:40] [INFO] initialize_level(): Inicializando nível 1...
-[2025-06-16 00:46:40] [INFO] load_maze(): Carregando mapa: maps/level1.txt...
-[2025-06-16 00:46:40] [INFO] load_maze(): Mapa 'maps/level1.txt' carregado. Jogador em: (9,15), Fantasmas: 0, Pontos: 186.
-[2025-06-16 00:46:40] [INFO] maze_init(): Labirinto finalizado para nível 1. Jogador em (9,15), 0 fantasmas, 186 pontos.
-[2025-06-16 00:46:40] [INFO] player_init(): Jogador inicializado em (9,15). Vidas: 3, Score: 0.
-[2025-06-16 00:46:40] [INFO] initialize_level(): Nível 1 inicializado. Jogador em (9,15). Fantasmas ativos: 0. Score: 0. Vidas: 3. Fila de fantasmas com 0 elementos.
-[2025-06-16 00:46:46] [INFO] player_move(): Item '.' coletado em (8,15)! Score: 10
-[2025-06-16 00:46:46] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (8,15)
-[2025-06-16 00:46:47] [INFO] player_move(): Item '.' coletado em (7,15)! Score: 20
-[2025-06-16 00:46:47] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (7,15)
-[2025-06-16 00:46:48] [INFO] player_move(): Item '.' coletado em (6,15)! Score: 30
-[2025-06-16 00:46:48] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (6,15)
-[2025-06-16 00:46:49] [INFO] player_move(): Item '.' coletado em (5,15)! Score: 40
-[2025-06-16 00:46:49] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (5,15)
-[2025-06-16 00:46:50] [INFO] player_move(): Item '.' coletado em (4,15)! Score: 50
-[2025-06-16 00:46:50] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,15)
-[2025-06-16 00:46:51] [INFO] player_move(): Item '.' coletado em (4,14)! Score: 60
-[2025-06-16 00:46:51] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,14)
-[2025-06-16 00:46:53] [INFO] player_move(): Item '.' coletado em (4,13)! Score: 70
-[2025-06-16 00:46:53] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,13)
-[2025-06-16 00:46:54] [INFO] player_move(): Item '.' coletado em (3,13)! Score: 80
-[2025-06-16 00:46:54] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (3,13)
-[2025-06-16 00:46:55] [INFO] player_move(): Item '.' coletado em (2,13)! Score: 90
-[2025-06-16 00:46:55] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (2,13)
-[2025-06-16 00:46:58] [INFO] process_player_input(): Jogo encerrado pelo jogador.
-[2025-06-16 00:46:58] [INFO] logger_game_ended(): ═══════════════════════════
-[2025-06-16 00:46:58] [INFO] logger_game_ended():     JOGO FINALIZADO
-[2025-06-16 00:46:58] [INFO] logger_game_ended(): Pontuação final: 90
-[2025-06-16 00:46:58] [INFO] logger_game_ended(): Tempo jogado: 1 segundos
-[2025-06-16 00:46:58] [INFO] logger_game_ended(): ═══════════════════════════
-[2025-06-16 00:46:58] [INFO] logger_shutdown(): Encerrando logger - Total de mensagens: 34
+[2025-06-16 02:19:31] [INFO] logger_init(): Logger inicializado - Arquivo: game.log, Nível mínimo: DEBUG
+[2025-06-16 02:19:31] [INFO] logger_game_started(): ═══════════════════════════
+[2025-06-16 02:19:31] [INFO] logger_game_started():     JOGO INICIADO
+[2025-06-16 02:19:31] [INFO] logger_game_started(): ═══════════════════════════
+[2025-06-16 02:19:31] [INFO] initialize_level(): Inicializando nível 1...
+[2025-06-16 02:19:31] [INFO] load_maze(): Carregando mapa: maps/level1.txt...
+[2025-06-16 02:19:31] [INFO] load_maze(): Mapa 'maps/level1.txt' carregado. Jogador em: (9,15), Fantasmas: 0, Pontos: 186.
+[2025-06-16 02:19:31] [INFO] maze_init(): Nenhum fantasma encontrado no mapa. Adicionando fantasmas padrão.
+[2025-06-16 02:19:31] [INFO] maze_init(): Fantasma padrão 1 adicionado em (3,3)
+[2025-06-16 02:19:31] [INFO] maze_init(): Fantasma padrão 2 adicionado em (12,3)
+[2025-06-16 02:19:31] [INFO] maze_init(): Fantasma padrão 3 adicionado em (4,12)
+[2025-06-16 02:19:31] [INFO] maze_init(): Fantasma padrão 4 adicionado em (13,12)
+[2025-06-16 02:19:31] [INFO] maze_init(): Labirinto finalizado para nível 1. Jogador em (9,15), 4 fantasmas, 186 pontos.
+[2025-06-16 02:19:31] [INFO] player_init(): Jogador inicializado em (9,15). Vidas: 3, Score: 0.
+[2025-06-16 02:19:31] [INFO] initialize_level(): Fantasma 0 (F) configurado para o nível 1 em (3,3)
+[2025-06-16 02:19:31] [INFO] initialize_level(): Fantasma 1 (G) configurado para o nível 1 em (12,3)
+[2025-06-16 02:19:31] [INFO] initialize_level(): Fantasma 2 (B) configurado para o nível 1 em (4,12)
+[2025-06-16 02:19:31] [INFO] initialize_level(): Fantasma 3 (R) configurado para o nível 1 em (13,12)
+[2025-06-16 02:19:31] [INFO] initialize_level(): Nível 1 inicializado. Jogador em (9,15). Fantasmas ativos: 4. Score: 0. Vidas: 3.
+[2025-06-16 02:19:35] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (9,15)
+[2025-06-16 02:19:38] [INFO] player_move(): Item '.' coletado em (8,15)! Score: 10
+[2025-06-16 02:19:38] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (8,15)
+[2025-06-16 02:19:39] [INFO] player_move(): Item '.' coletado em (7,15)! Score: 20
+[2025-06-16 02:19:39] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (7,15)
+[2025-06-16 02:19:40] [INFO] player_move(): Item '.' coletado em (6,15)! Score: 30
+[2025-06-16 02:19:40] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (6,15)
+[2025-06-16 02:19:41] [INFO] player_move(): Item '.' coletado em (5,15)! Score: 40
+[2025-06-16 02:19:41] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (5,15)
+[2025-06-16 02:19:42] [INFO] player_move(): Item '.' coletado em (4,15)! Score: 50
+[2025-06-16 02:19:42] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,15)
+[2025-06-16 02:19:43] [INFO] player_move(): Item '.' coletado em (4,16)! Score: 60
+[2025-06-16 02:19:43] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,16)
+[2025-06-16 02:19:44] [INFO] player_move(): Item '.' coletado em (4,17)! Score: 70
+[2025-06-16 02:19:44] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,17)
+[2025-06-16 02:19:45] [INFO] player_move(): Item '.' coletado em (3,17)! Score: 80
+[2025-06-16 02:19:45] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (3,17)
+[2025-06-16 02:19:45] [INFO] player_move(): Item '.' coletado em (2,17)! Score: 90
+[2025-06-16 02:19:45] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (2,17)
+[2025-06-16 02:19:47] [INFO] player_move(): Item '.' coletado em (1,17)! Score: 100
+[2025-06-16 02:19:47] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (1,17)
+[2025-06-16 02:19:47] [INFO] player_move(): Item '.' coletado em (1,18)! Score: 110
+[2025-06-16 02:19:47] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (1,18)
+[2025-06-16 02:19:48] [INFO] player_move(): Item '.' coletado em (1,19)! Score: 120
+[2025-06-16 02:19:48] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (1,19)
+[2025-06-16 02:19:49] [INFO] player_move(): Item '.' coletado em (2,19)! Score: 130
+[2025-06-16 02:19:49] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (2,19)
+[2025-06-16 02:19:50] [INFO] player_move(): Item '.' coletado em (3,19)! Score: 140
+[2025-06-16 02:19:50] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (3,19)
+[2025-06-16 02:19:50] [INFO] player_move(): Item '.' coletado em (4,19)! Score: 150
+[2025-06-16 02:19:50] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,19)
+[2025-06-16 02:19:51] [INFO] player_move(): Item '.' coletado em (5,19)! Score: 160
+[2025-06-16 02:19:51] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (5,19)
+[2025-06-16 02:19:53] [INFO] player_move(): Item '.' coletado em (6,19)! Score: 170
+[2025-06-16 02:19:53] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (6,19)
+[2025-06-16 02:19:54] [INFO] player_move(): Item '.' coletado em (7,19)! Score: 180
+[2025-06-16 02:19:54] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (7,19)
+[2025-06-16 02:19:55] [INFO] player_move(): Item '.' coletado em (8,19)! Score: 190
+[2025-06-16 02:19:55] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (8,19)
+[2025-06-16 02:19:56] [INFO] player_move(): Item '.' coletado em (9,19)! Score: 200
+[2025-06-16 02:19:56] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (9,19)
+[2025-06-16 02:19:57] [INFO] player_move(): Item '.' coletado em (10,19)! Score: 210
+[2025-06-16 02:19:57] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (10,19)
+[2025-06-16 02:19:58] [INFO] player_move(): Item '.' coletado em (11,19)! Score: 220
+[2025-06-16 02:19:58] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,19)
+[2025-06-16 02:19:59] [INFO] player_move(): Item '.' coletado em (11,18)! Score: 230
+[2025-06-16 02:19:59] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,18)
+[2025-06-16 02:20:00] [INFO] player_move(): Item '.' coletado em (11,17)! Score: 240
+[2025-06-16 02:20:00] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,17)
+[2025-06-16 02:20:01] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,18)
+[2025-06-16 02:20:03] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,19)
+[2025-06-16 02:20:04] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,18)
+[2025-06-16 02:20:05] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,17)
+[2025-06-16 02:20:06] [INFO] player_move(): Item '.' coletado em (12,17)! Score: 250
+[2025-06-16 02:20:06] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (12,17)
+[2025-06-16 02:20:07] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (12,17)
+[2025-06-16 02:20:08] [INFO] player_move(): Item '.' coletado em (13,17)! Score: 260
+[2025-06-16 02:20:08] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (13,17)
+[2025-06-16 02:20:09] [INFO] player_move(): Item '.' coletado em (13,16)! Score: 270
+[2025-06-16 02:20:09] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (13,16)
+[2025-06-16 02:20:10] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (13,17)
+[2025-06-16 02:20:11] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (12,17)
+[2025-06-16 02:20:12] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (12,17)
+[2025-06-16 02:20:12] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,17)
+[2025-06-16 02:20:13] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,18)
+[2025-06-16 02:20:14] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (11,19)
+[2025-06-16 02:20:15] [INFO] player_move(): Item '.' coletado em (12,19)! Score: 280
+[2025-06-16 02:20:15] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (12,19)
+[2025-06-16 02:20:16] [INFO] player_move(): Item '.' coletado em (13,19)! Score: 290
+[2025-06-16 02:20:16] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (13,19)
+[2025-06-16 02:20:17] [INFO] player_move(): Item '.' coletado em (14,19)! Score: 300
+[2025-06-16 02:20:17] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (14,19)
+[2025-06-16 02:20:17] [INFO] player_move(): Item '.' coletado em (15,19)! Score: 310
+[2025-06-16 02:20:17] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (15,19)
+[2025-06-16 02:20:18] [INFO] player_move(): Item '.' coletado em (16,19)! Score: 320
+[2025-06-16 02:20:18] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (16,19)
+[2025-06-16 02:20:19] [INFO] player_move(): Item '.' coletado em (17,19)! Score: 330
+[2025-06-16 02:20:19] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (17,19)
+[2025-06-16 02:20:20] [INFO] player_move(): Item '.' coletado em (18,19)! Score: 340
+[2025-06-16 02:20:20] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (18,19)
+[2025-06-16 02:20:20] [INFO] player_move(): Item '.' coletado em (18,18)! Score: 350
+[2025-06-16 02:20:20] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (18,18)
+[2025-06-16 02:20:21] [INFO] player_move(): Item '.' coletado em (18,17)! Score: 360
+[2025-06-16 02:20:21] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (18,17)
+[2025-06-16 02:20:22] [INFO] player_move(): Item '.' coletado em (17,17)! Score: 370
+[2025-06-16 02:20:22] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (17,17)
+[2025-06-16 02:20:23] [INFO] player_move(): Item '.' coletado em (16,17)! Score: 380
+[2025-06-16 02:20:23] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (16,17)
+[2025-06-16 02:20:24] [INFO] player_move(): Item '.' coletado em (15,17)! Score: 390
+[2025-06-16 02:20:24] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (15,17)
+[2025-06-16 02:20:24] [INFO] player_move(): Item '.' coletado em (15,16)! Score: 400
+[2025-06-16 02:20:24] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (15,16)
+[2025-06-16 02:20:26] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (15,16)
+[2025-06-16 02:20:26] [WARNING] logger_collision_detected(): 💥 COLISÃO detectada! Jogador (15,16) vs Fantasma 1
+[2025-06-16 02:20:26] [INFO] player_lose_life(): Jogador perdeu uma vida. Vidas restantes: 2
+[2025-06-16 02:20:26] [INFO] update_game(): Vida perdida! Vidas restantes: 2
+[2025-06-16 02:20:31] [INFO] process_player_input(): Jogo encerrado pelo jogador.
+[2025-06-16 02:20:31] [INFO] logger_game_ended(): ═══════════════════════════
+[2025-06-16 02:20:31] [INFO] logger_game_ended():     JOGO FINALIZADO
+[2025-06-16 02:20:31] [INFO] logger_game_ended(): Pontuação final: 400
+[2025-06-16 02:20:31] [INFO] logger_game_ended(): Tempo jogado: 1 segundos
+[2025-06-16 02:20:31] [INFO] logger_game_ended(): ═══════════════════════════
+[2025-06-16 02:20:31] [INFO] logger_shutdown(): Encerrando logger - Total de mensagens: 121

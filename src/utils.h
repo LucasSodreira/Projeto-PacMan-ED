@@ -85,6 +85,7 @@ typedef struct {
 void clear_screen(void);
 void print_instructions(void);
 char get_user_input(void);
+void setup_console(void);  // Nova função para configurar o console
 
 // ===== FUNÇÕES DE POSIÇÃO =====
 int is_valid_position(int x, int y, int width, int height);

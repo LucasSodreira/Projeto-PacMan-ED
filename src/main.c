@@ -14,6 +14,7 @@
 
 static GameStatus game_status = PLAYING;
 static int current_level = 1;
+static int ghost_move_counter = 0;  // Contador simples para movimento dos fantasmas
 static const char* difficulty_names[] = {"Easy", "Medium", "Hard"};
 
 static void initialize_level(int level_number, Maze* maze, Player* player,
@@ -51,18 +52,11 @@ static void initialize_level(int level_number, Maze* maze, Player* player,
         } else {
             ghosts[i].is_active = false;
         }
-    }
-
-    clear_queue(ghost_move_queue);
-    for (int i = 0; i < MAX_GHOSTS; i++) {
-        if (ghosts[i].is_active) {
-            if (!enqueue(ghost_move_queue, ghosts[i])) {
-                LOG_E("Falha ao enfileirar fantasma %d para o nível %d. A fila pode estar cheia ou ocorreu um erro de alocação.", ghosts[i].ghost_id, level_number);
-            }
-        }
-    }
-    LOG_I("Nível %d inicializado. Jogador em (%d,%d). Fantasmas ativos: %d. Score: %d. Vidas: %d. Fila de fantasmas com %d elementos.",
-          level_number, player->pos.x, player->pos.y, *out_active_ghosts_from_map, player->score, player->lives, queue_size(ghost_move_queue));
+    }    // Não precisamos mais da fila para os fantasmas, mantemos só para compatibilidade
+    // clear_queue(ghost_move_queue);
+    
+    LOG_I("Nível %d inicializado. Jogador em (%d,%d). Fantasmas ativos: %d. Score: %d. Vidas: %d.",
+          level_number, player->pos.x, player->pos.y, *out_active_ghosts_from_map, player->score, player->lives);
 }
 
 void game_loop() {
@@ -93,21 +87,26 @@ void game_loop() {
 
     bool all_levels_completed = false;
 
-    do {
-        initialize_level(current_level, &maze, &player, ghosts,
+    do {        initialize_level(current_level, &maze, &player, ghosts,
                          &player_start_pos_for_level, ghost_initial_positions_for_level,
                          &active_ghosts_for_level,
                          ghost_move_queue);
         
         game_status = PLAYING;
-
-        while (game_status == PLAYING) {
+  while (game_status == PLAYING || game_status == PAUSED) {
 
             if (game_status == PAUSED) {
                 clear_screen();
-                printf("\n\t ### JOGO PAUSADO ###\n");
-                printf("\n\t Pressione '%c' para continuar.", KEY_PAUSE);
-                printf("\n\t Pressione '%c' para sair.\n", KEY_QUIT);
+                printf("\n");
+                printf("    ===============================================\n");
+                printf("    |                                             |\n");
+                printf("    |           ### JOGO PAUSADO ###             |\n");
+                printf("    |                                             |\n");
+                printf("    |  Pressione '%c' para continuar              |\n", KEY_PAUSE);
+                printf("    |  Pressione '%c' para sair                   |\n", KEY_QUIT);
+                printf("    |                                             |\n");
+                printf("    ===============================================\n");
+                printf("\n    Opcao: ");
 
                 char pause_input = get_user_input();
                 if (toupper(pause_input) == KEY_PAUSE) {
@@ -116,76 +115,39 @@ void game_loop() {
                 } else if (toupper(pause_input) == KEY_QUIT) {
                     game_status = GAME_OVER;
                     LOG_I("Jogo encerrado pelo jogador durante a pausa.");
-                }
-                if (game_status != PLAYING) continue;
-            }
-
-            draw_game(&player, &maze, ghosts, active_ghosts_for_level, game_status);
-            printf("Nível: %d | Comandos: WASD/Setas, P (Pausar), Q (Sair)\n", current_level);
-
-            char input_char = get_user_input();
-            if (input_char == '\0' && game_status == PLAYING) {
-            } else if (input_char != '\0') {
-                 process_player_input(&player, &maze, ghosts, active_ghosts_for_level, &game_status, input_char);
-            }
-            
-            if (game_status != PLAYING) {
-                continue;
-            }
-
-            if (!is_empty(ghost_move_queue)) {
-                Ghost current_ghost_copy = dequeue(ghost_move_queue);
-
-                if (current_ghost_copy.ghost_id != -1) {
-                    Ghost* original_ghost = NULL;
-                    for (int i = 0; i < MAX_GHOSTS; ++i) {
-                        if (ghosts[i].ghost_id == current_ghost_copy.ghost_id) {
-                            original_ghost = &ghosts[i];
-                            break;
-                        }
+                }                continue;
+            }            // Processar input de forma não-bloqueante no Windows
+            #ifdef _WIN32
+                if (_kbhit()) {  // Verifica se há tecla pressionada
+                    char input_char = _getch();
+                    process_player_input(&player, &maze, ghosts, active_ghosts_for_level, &game_status, input_char);
+                    
+                    if (game_status != PLAYING) {
+                        continue;
                     }
 
-                    if (original_ghost) {
-                        original_ghost->timer++;
-                        update_ghost_state(original_ghost, original_ghost->timer);
+                    bool level_is_over_flag = false;
+                    update_game(&player, &maze, ghosts, active_ghosts_for_level, &game_status, &level_is_over_flag, player_start_pos_for_level);
 
-                        if (original_ghost->is_active || original_ghost->state == GHOST_EATEN) {
-                            if (original_ghost->is_active || (original_ghost->state == GHOST_EATEN && !positions_equal(original_ghost->pos, original_ghost->initial_pos))) {
-                                Direction new_dir = calculate_next_direction(original_ghost, player.pos, &maze);
-                                if (new_dir != DIR_INVALID) {
-                                    Position next_pos = get_next_position(original_ghost->pos, new_dir);
-                                    if (is_valid_move_ghost(next_pos, &maze)) {
-                                        original_ghost->pos = next_pos;
-                                    }
-                                    original_ghost->direction = new_dir;
-                                }
-                                if (original_ghost->state == GHOST_EATEN && positions_equal(original_ghost->pos, original_ghost->initial_pos)) {
-                                    LOG_I("Fantasma %d (%c) chegou à base e foi resetado.", original_ghost->ghost_id, original_ghost->symbol);
-                                    reset_ghost(original_ghost);
-                                }
-                            }
-                            bool should_reenqueue = false;
-                            if (original_ghost->is_active) {
-                                should_reenqueue = true;
-                            } else if (original_ghost->state == GHOST_EATEN && !original_ghost->is_active) {
-                                should_reenqueue = true;
-                            }
-
-                            if (should_reenqueue) {
-                                if (!enqueue(ghost_move_queue, *original_ghost)) {
-                                    LOG_E("Falha ao re-enfileirar fantasma %d. Pode ser perdido no próximo ciclo.", original_ghost->ghost_id);
-                                }
-                            } else {
-                                LOG_D("Fantasma %d (%c) não foi re-enfileirado (estado: %d, ativo: %d)",
-                                      original_ghost->ghost_id, original_ghost->symbol, original_ghost->state, original_ghost->is_active);
-                            }
-                        }
-                    }
+                    draw_game(&player, &maze, ghosts, active_ghosts_for_level, game_status);
+                    printf("Nivel: %d | Comandos: WASD/Setas, P (Pausar), Q (Sair)\n", current_level);
                 }
-            }
+            #else
+                char input_char = get_user_input();
+                if (input_char != '\0') {
+                    process_player_input(&player, &maze, ghosts, active_ghosts_for_level, &game_status, input_char);
+                    
+                    if (game_status != PLAYING) {
+                        continue;
+                    }
 
-            bool level_is_over_flag = false;
-            update_game(&player, &maze, ghosts, active_ghosts_for_level, &game_status, &level_is_over_flag, player_start_pos_for_level);
+                    bool level_is_over_flag = false;
+                    update_game(&player, &maze, ghosts, active_ghosts_for_level, &game_status, &level_is_over_flag, player_start_pos_for_level);
+
+                    draw_game(&player, &maze, ghosts, active_ghosts_for_level, game_status);
+                    printf("Nivel: %d | Comandos: WASD/Setas, P (Pausar), Q (Sair)\n", current_level);
+                }
+            #endif
 
             if(game_status == PLAYING) {
                 sleep_ms(GAME_SPEED_MS);
@@ -212,29 +174,58 @@ void game_loop() {
     destroy_game_stats(game_stats);
     destroy_profile_data(ai_profile);
     destroy_queue(ghost_move_queue);
-    logger_shutdown();
-
-    clear_screen();
+    logger_shutdown();    clear_screen();
     printf("\n\n");
+    
     if (game_status == VICTORY && all_levels_completed) {
-        printf("    ******************************************\n");
-        printf("    *  🎉 P A R A B É N S, VOCÊ VENCEU! 🎉  *\n");
-        printf("    * Você completou todos os %d níveis! *\n", MAX_LEVELS);
-        printf("    ******************************************\n");
+        PRINT_BOLD(32, "    ================================================================\n");
+        PRINT_BOLD(32, "    |                                                              |\n");
+        PRINT_BOLD(32, "    |       ");
+        PRINT_COLOR(33, "P A R A B E N S ,   V O C E   V E N C E U !");
+        PRINT_BOLD(32, "        |\n");
+        PRINT_BOLD(32, "    |                                                              |\n");
+        PRINT_BOLD(32, "    |           ");
+        printf("\x1b[35mVoce completou todos os %d niveis!\x1b[0m", MAX_LEVELS);
+        PRINT_BOLD(32, "            |\n");
+        PRINT_BOLD(32, "    |                                                              |\n");
+        PRINT_BOLD(32, "    ================================================================\n");
     } else if (game_status == VICTORY) {
-        printf("    ******************************\n");
-        printf("    *       🎉 VITÓRIA! 🎉      *\n");
-        printf("    *   Nível %d completado!    *\n", all_levels_completed ? MAX_LEVELS : current_level -1 );
-        printf("    ******************************\n");
+        PRINT_BOLD(32, "    ================================================\n");
+        PRINT_BOLD(32, "    |                                              |\n");
+        PRINT_BOLD(32, "    |            ");
+        PRINT_COLOR(33, "V I T O R I A !");
+        PRINT_BOLD(32, "            |\n");
+        PRINT_BOLD(32, "    |                                              |\n");
+        PRINT_BOLD(32, "    |      ");
+        printf("\x1b[35mNivel %d completado!\x1b[0m", all_levels_completed ? MAX_LEVELS : current_level -1);
+        PRINT_BOLD(32, "       |\n");
+        PRINT_BOLD(32, "    |                                              |\n");
+        PRINT_BOLD(32, "    ================================================\n");
     } else {
-        printf("    ******************************\n");
-        printf("    *      💀 GAME OVER 💀      *\n");
-        printf("    ******************************\n");
-    }
+        PRINT_BOLD(31, "    ================================================\n");
+        PRINT_BOLD(31, "    |                                              |\n");
+        PRINT_BOLD(31, "    |             ");
+        PRINT_COLOR(33, "G A M E   O V E R");
+        PRINT_BOLD(31, "            |\n");
+        PRINT_BOLD(31, "    |                                              |\n");
+        PRINT_BOLD(31, "    |          ");
+        PRINT_COLOR(36, "Tente novamente na proxima vez!");
+        PRINT_BOLD(31, "       |\n");
+        PRINT_BOLD(31, "    |                                              |\n");
+        PRINT_BOLD(31, "    ================================================\n");    }
+    
     printf("\n");
-    printf("    Nível Final Alcançado: %d\n", (all_levels_completed ? MAX_LEVELS : (game_status == VICTORY ? current_level -1 : current_level) ));
-    printf("    Pontuação Final: %d\n", player.score);
-    printf("\n\n    Pressione ENTER para sair...\n");
+    printf("    +----------------------------------------------------+\n");
+    printf("    |                RESULTADO FINAL                     |\n");
+    printf("    +----------------------------------------------------+\n");
+    printf("    | Nivel Final Alcancado : %-22d |\n", 
+           (all_levels_completed ? MAX_LEVELS : (game_status == VICTORY ? current_level -1 : current_level)));
+    printf("    | Pontuacao Final       : %-22d |\n", player.score);
+    printf("    +----------------------------------------------------+\n");
+    
+    printf("\n");
+    printf("    Pressione ENTER para sair...");
+    printf("\n");
 
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
@@ -242,9 +233,44 @@ void game_loop() {
 }
 
 int main(void) {
-    show_title_screen();
-    game_loop();
+    setup_console();  // Configura o console para melhor compatibilidade
     
-    printf("\n\x1b[33;1m*** Obrigado por jogar %s! ***\x1b[0m\n", GAME_TITLE);
+    // Loop do menu principal
+    char menu_choice;
+    bool should_exit = false;
+    
+    while (!should_exit) {
+        show_title_screen();
+        menu_choice = get_user_input();
+        
+        switch (menu_choice) {
+            case '\r':  // Enter key
+            case '\n':  // Enter key (algumas variações)
+            case ' ':   // Espaço como alternativa
+                game_loop();
+                should_exit = true;
+                break;
+                
+            case 'I':
+            case 'i':
+                print_instructions();
+                printf("\n    Pressione qualquer tecla para voltar ao menu...");
+                get_user_input();
+                break;
+                
+            case 'Q':
+            case 'q':
+                should_exit = true;
+                break;
+                
+            default:
+                // Opção inválida - continua no loop mostrando o menu novamente
+                break;
+        }
+    }
+    
+    printf("\n");
+    printf("*** Obrigado por jogar %s! ***\n", GAME_TITLE);
+    printf("\n");
     return 0;
 }

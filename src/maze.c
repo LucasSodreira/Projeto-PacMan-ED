@@ -144,6 +144,47 @@ void maze_init(Maze* maze, int current_level, Position* out_player_start_pos, Po
         LOG_E("Falha crítica ao carregar mapa do nível %d. Usando mapa padrão de emergência.", current_level);
         fill_default_map(maze, out_player_start_pos, out_ghost_start_positions, out_ghost_count);
     }
+    
+    // Se não há fantasmas no mapa, adicionar fantasmas padrão
+    if (*out_ghost_count == 0) {
+        LOG_I("Nenhum fantasma encontrado no mapa. Adicionando fantasmas padrão.");
+          // Posições específicas que são espaços livres no mapa level1.txt
+        Position default_ghost_positions[4] = {
+            {5, 5},   // Espaço livre na parte superior esquerda
+            {14, 5},  // Espaço livre na parte superior direita
+            {5, 14},  // Espaço livre na parte inferior esquerda
+            {14, 14}  // Espaço livre na parte inferior direita
+        };
+        
+        int ghosts_to_add = (MAX_GHOSTS < 4) ? MAX_GHOSTS : 4;
+        for (int i = 0; i < ghosts_to_add; i++) {
+            // Verificar se a posição é válida (não é parede)
+            Position pos = default_ghost_positions[i];
+            if (pos.x >= 0 && pos.x < maze->width && pos.y >= 0 && pos.y < maze->height) {
+                if (maze->grid[pos.y][pos.x] == SYMBOL_WALL) {
+                    // Encontrar uma posição próxima que não seja parede
+                    for (int dy = -2; dy <= 2; dy++) {
+                        for (int dx = -2; dx <= 2; dx++) {
+                            int new_x = pos.x + dx;
+                            int new_y = pos.y + dy;
+                            if (new_x >= 0 && new_x < maze->width && new_y >= 0 && new_y < maze->height) {
+                                if (maze->grid[new_y][new_x] != SYMBOL_WALL) {
+                                    pos.x = new_x;
+                                    pos.y = new_y;
+                                    goto position_found;
+                                }
+                            }
+                        }
+                    }
+                    position_found:;
+                }
+                out_ghost_start_positions[*out_ghost_count] = pos;
+                (*out_ghost_count)++;
+                LOG_I("Fantasma padrão %d adicionado em (%d,%d)", *out_ghost_count, pos.x, pos.y);
+            }
+        }
+    }
+    
     maze->player_start_pos_from_map = *out_player_start_pos;
     LOG_I("Labirinto finalizado para nível %d. Jogador em (%d,%d), %d fantasmas, %d pontos.",
         current_level, maze->player_start_pos_from_map.x, maze->player_start_pos_from_map.y, *out_ghost_count, maze->total_points);

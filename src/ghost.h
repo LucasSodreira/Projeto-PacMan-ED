@@ -2,13 +2,12 @@
 #define GHOST_H
 
 #include <stdbool.h>
-#include "utils.h"    // Para Position, Direction, Player (se definido aqui) etc.
 #include "config.h"   // Para MAX_GHOSTS
-#include "player.h"   // Para Player struct
+#include "utils.h"    // Para Position, Direction, Player (se definido aqui) etc.
+#include "maze.h"     // Para estrutura Maze
 
-// Forward declaration da estrutura Maze
-struct Maze;
-typedef struct Maze Maze;
+// Forward declaration para evitar dependência circular
+typedef struct Player Player;
 
 // Constantes dos fantasmas
 #define MAX_PATH_LENGTH 100
@@ -25,18 +24,8 @@ typedef struct Maze Maze;
 // Duração do estado "comido" antes de reativar
 #define GHOST_EATEN_DURATION 200 // Ajustar: 200 ticks/frames
 
-// Estados dos fantasmas
-typedef enum {
-    GHOST_NORMAL,
-    GHOST_FRIGHTENED,
-    GHOST_EATEN
-} GhostState;
-
-typedef enum {
-    DIFFICULTY_EASY,
-    DIFFICULTY_MEDIUM,
-    DIFFICULTY_HARD
-} DifficultyLevel;
+// Importar enums de utils.h
+// GhostState e DifficultyLevel estão definidos em utils.h
 
 // Estrutura dos fantasmas - definição completa
 struct Ghost {
@@ -71,7 +60,23 @@ bool is_valid_move_ghost(Position pos, const Maze* maze_data);
 
 // Ghost state management
 void update_ghost_state(Ghost* ghost, int current_time);
-void set_ghost_difficulty(Ghost* ghost, DifficultyLevel difficulty);
-void reset_ghost(Ghost* ghost);
 
-#endif
+
+
+// ===== FUNÇÕES DA FILA DE CAMINHO INTERNA =====
+bool ghost_path_enqueue(Ghost* ghost, Position pos);
+Position ghost_path_dequeue(Ghost* ghost);
+bool ghost_path_is_empty(const Ghost* ghost);
+bool ghost_path_is_full(const Ghost* ghost);
+void ghost_path_clear(Ghost* ghost);
+int ghost_path_size(const Ghost* ghost);
+Position ghost_path_peek(const Ghost* ghost);
+
+// ===== FUNÇÕES AVANÇADAS DE PATHFINDING =====
+void ghost_plan_path_to_target(Ghost* ghost, Position target, const Maze* maze_data);
+bool ghost_follow_path(Ghost* ghost, const Maze* maze_data);
+
+// System initialization function (moved from utils.h)
+void initialize_ghosts_safely(Ghost ghosts[], Maze* maze);
+
+#endif // GHOST_H

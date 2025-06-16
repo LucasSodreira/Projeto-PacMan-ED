@@ -4,49 +4,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>  // Para va_list
-#include <math.h>    // Para abs()
-#include <time.h>    // Para srand() e time()
-
-#ifdef _WIN32
-    #include <windows.h>  // Para Sleep()
-#else
-    #include <unistd.h>   // Para usleep()
-#endif
-
-// Incluir config.h para constantes globais
+#include <stdarg.h>
+#include <math.h>
+#include <time.h>
 #include "config.h"
 
-// Definições de constantes (usar config.h quando possível)
-#define MAX_MAP_SIZE 50
-#define MAX_NAME_SIZE 50
+#ifdef _WIN32
+    #include <windows.h>
+    #include <conio.h>
+    #define strcasecmp _stricmp
+#else
+    #include <unistd.h>
+    #include <termios.h>
+    #include <fcntl.h>
+#endif
 
-// ===== CONSTANTES =====
-#define DEFAULT_LIVES 3
-#define POINTS_PER_DOT 10
-#define BONUS_LEVEL_POINTS 100
-#define POINTS_FOR_EXTRA_LIFE 1000
-#define GAME_FPS 30
-#define GHOST_MOVE_DELAY 2
-#define MAX_LEVELS 10
+// ===== FORWARD DECLARATIONS =====
+typedef struct Position Position;
+typedef struct Player Player;
+typedef struct Ghost Ghost;
 
-// Cores para fantasmas (se suportado)
-#define COLOR_RED 31
-#define COLOR_GREEN 32
-#define COLOR_BLUE 34
-#define COLOR_MAGENTA 35
-#define COLOR_YELLOW 33
-#define COLOR_RESET 0
+// ===== ENUMS COMPARTILHADOS =====
+typedef enum {
+    GHOST_NORMAL,
+    GHOST_FRIGHTENED,
+    GHOST_EATEN
+} GhostState;
 
-// Direções possíveis
+typedef enum {
+    DIFFICULTY_EASY,
+    DIFFICULTY_MEDIUM,
+    DIFFICULTY_HARD
+} DifficultyLevel;
+
+// Enums são definidos aqui pois são tipos fundamentais
 typedef enum {
     NORTH = 0,
     EAST = 1, 
     SOUTH = 2,
-    WEST = 3
+    WEST = 3,
+    DIR_INVALID = -1
 } Direction;
 
-// Status do jogo
 typedef enum {
     PLAYING,
     GAME_OVER,
@@ -54,70 +53,70 @@ typedef enum {
     PAUSED
 } GameStatus;
 
-// Estrutura para representar uma posição
-typedef struct {
+// ===== ESTRUTURAS BÁSICAS =====
+struct Position {
     int x, y;
-} Position;
+};
 
-// Estrutura do Pac-Man
+struct Player {
+    Position pos;
+    int score;
+    int lives;
+    char symbol;
+};
+
+
+
+
+// ===== ESTRUTURA DE ESTADO DO JOGO (sem Ghost para evitar circular dependency) =====
 typedef struct {
-    Position pos;           // Posição atual
-    int score;             // Pontuação
-    int lives;             // Vidas restantes
-    char symbol;           // Símbolo no mapa ('P')
-} Player;
-
-// Forward declaration apenas - definição completa em ghost.h
-struct Ghost;
-typedef struct Ghost Ghost;
-
-// Estrutura do Estado do Jogo
-typedef struct {
-    char map[MAX_MAP_SIZE][MAX_MAP_SIZE];  // Matriz do labirinto
-    int map_width;                         // Largura do mapa
-    int map_height;                        // Altura do mapa
-    Player player;                         // Dados do jogador
-    int total_dots;                        // Total de pontos no mapa
-    int collected_dots;                    // Pontos coletados
-    Ghost* ghosts;                         // Array de fantasmas
-    int num_ghosts;                        // Número de fantasmas
-    GameStatus status;                     // Status atual do jogo
-    int level;                            // Nível atual
+    char map[MAX_MAP_SIZE][MAX_MAP_SIZE];
+    int map_width;
+    int map_height;
+    Player player;
+    int total_dots;
+    int collected_dots;
+    int num_ghosts;
+    GameStatus status;
+    int level;
 } GameState;
 
-// Funções utilitárias
-void clear_screen();
-void print_instructions();
-char get_user_input();
+// ===== FUNÇÕES DE SISTEMA =====
+void clear_screen(void);
+void print_instructions(void);
+char get_user_input(void);
+
+// ===== FUNÇÕES DE POSIÇÃO =====
 int is_valid_position(int x, int y, int width, int height);
-void initialize_game_state(GameState* game);
-void print_game_stats(GameState* game);
+int manhattan_distance(Position a, Position b);
+int positions_equal(Position a, Position b);
 
-// ===== FUNÇÕES AUXILIARES =====
-
-// Funções de direção
+// ===== FUNÇÕES DE DIREÇÃO =====
 int is_valid_direction(Direction dir);
 const char* direction_to_string(Direction dir);
 Direction string_to_direction(const char* str);
 Direction get_opposite_direction(Direction dir);
 Position get_next_position(Position pos, Direction dir);
-Direction random_direction();
+Direction random_direction(void);
 
-// Funções de posição
-int manhattan_distance(Position a, Position b);
-int positions_equal(Position a, Position b);
-
-// Funções de validação
+// ===== FUNÇÕES DE VALIDAÇÃO =====
 int is_valid_ghost_id(int ghost_id);
 int is_valid_ghost_symbol(char symbol);
 
-// Funções de conversão
+// ===== FUNÇÕES DE CONVERSÃO =====
 const char* game_status_to_string(GameStatus status);
 void format_time(char* buffer, int seconds);
 
-// Funções de utilidade geral
+// ===== FUNÇÕES UTILITÁRIAS =====
 void sleep_ms(int milliseconds);
 int random_range(int min, int max);
 void debug_log(const char* format, ...);
 
-#endif
+// ===== FUNÇÕES DE ESTADO DO JOGO =====
+void initialize_game_state(GameState* game);
+void print_game_stats(GameState* game);
+
+// ===== FUNÇÕES DE INICIALIZAÇÃO DE SISTEMA =====
+// Movidas para stats.h para evitar dependências circulares
+
+#endif // UTILS_H

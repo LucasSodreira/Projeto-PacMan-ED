@@ -1,9 +1,9 @@
 #include "stats.h"
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-// ===== FUNÇÕES PARA ESTATÍSTICAS DA FILA =====
+#include <time.h>
 
 QueueStats* create_queue_stats() {
     QueueStats* stats = (QueueStats*)malloc(sizeof(QueueStats));
@@ -53,7 +53,6 @@ void update_queue_stats_dequeue(QueueStats* stats, int current_size) {
 void calculate_avg_size(QueueStats* stats) {
     if (!stats || stats->operations_count == 0) return;
     
-    // Atualizar média móvel simples
     stats->avg_size = ((stats->avg_size * (stats->operations_count - 1)) + stats->current_size) / stats->operations_count;
 }
 
@@ -85,8 +84,6 @@ void destroy_queue_stats(QueueStats* stats) {
         free(stats);
     }
 }
-
-// ===== FUNÇÕES PARA ESTATÍSTICAS DO JOGO =====
 
 GameStats* create_game_stats() {
     GameStats* stats = (GameStats*)malloc(sizeof(GameStats));
@@ -131,7 +128,6 @@ void update_game_stats_game_ended(GameStats* stats, int score, double game_time)
         stats->highest_score = score;
     }
     
-    // Atualizar tempo médio de jogo
     stats->avg_game_time = ((stats->avg_game_time * (stats->total_games_played - 1)) + game_time) / stats->total_games_played;
 }
 
@@ -216,8 +212,6 @@ void destroy_game_stats(GameStats* stats) {
     }
 }
 
-// ===== FUNÇÕES PARA PROFILING =====
-
 ProfileData* start_profiling(const char* operation_name) {
     ProfileData* profile = (ProfileData*)malloc(sizeof(ProfileData));
     if (!profile) {
@@ -255,14 +249,11 @@ void destroy_profile_data(ProfileData* profile) {
     }
 }
 
-// ===== FUNÇÕES AUXILIARES DE ANÁLISE =====
-
 void analyze_queue_performance(QueueStats* stats) {
     if (!stats) return;
     
     printf("=== ANÁLISE DE PERFORMANCE DA FILA ===\n");
     
-    // Análise de utilização
     if (stats->max_size_reached > 0) {
         double utilization = (stats->avg_size / stats->max_size_reached) * 100;
         printf("Utilização média: %.1f%%\n", utilization);
@@ -276,7 +267,6 @@ void analyze_queue_performance(QueueStats* stats) {
         }
     }
     
-    // Análise de operações
     if (stats->total_enqueues > 0 && stats->total_dequeues > 0) {
         double ratio = (double)stats->total_enqueues / stats->total_dequeues;
         printf("Taxa enqueue/dequeue: %.2f\n", ratio);
@@ -311,9 +301,7 @@ void generate_performance_report(QueueStats* queue_stats, GameStats* game_stats)
     time_t now = time(NULL);
     printf("%s", ctime(&now));
 }
-
-
-// Função stub para update_game_stats_score
 void update_game_stats_score(GameStats* stats, int score) {
     if (stats) stats->highest_score = score;
 }
+

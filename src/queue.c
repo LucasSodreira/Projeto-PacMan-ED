@@ -3,7 +3,6 @@
 #include "ghost.h"
 #include "queue.h"
 
-// Criar uma nova fila
 Queue* create_queue() {
     Queue* queue = (Queue*)malloc(sizeof(Queue));
     if (!queue) {
@@ -17,21 +16,15 @@ Queue* create_queue() {
     return queue;
 }
 
-// Adicionar fantasma no final da fila
-// Retorna true em sucesso, false em falha (ex: falha de alocação)
 bool enqueue(Queue* queue, Ghost ghost) {
     if (!queue) {
-        // Idealmente, logar ou tratar erro de forma mais robusta se queue for NULL.
-        // Mas, para esta função, se queue é NULL, não podemos enfileirar.
         return false;
     }
     
     QueueNode* new_node = (QueueNode*)malloc(sizeof(QueueNode));
     if (!new_node) {
         printf("Erro Crítico: Falha ao alocar memória para novo nó da fila.\n");
-        // Em um jogo real, isso poderia exigir tratamento mais drástico,
-        // como tentar liberar memória ou encerrar de forma controlada.
-        return false; // Sinaliza falha
+        return false;
     }
     
     new_node->ghost = ghost;
@@ -46,12 +39,10 @@ bool enqueue(Queue* queue, Ghost ghost) {
     }
     
     queue->size++;
-    return true; // Sucesso
+    return true;
 }
 
-// Remover fantasma do início da fila
 Ghost dequeue(Queue* queue) {
-    // Inicializar ghost vazio com todos os campos
     Ghost empty_ghost = {
         .pos = {-1, -1},
         .direction = NORTH,
@@ -86,12 +77,10 @@ Ghost dequeue(Queue* queue) {
     return ghost;
 }
 
-// Verificar se a fila está vazia
 int is_empty(Queue* queue) {
     return (queue == NULL || queue->front == NULL);
 }
 
-// Destruir a fila e liberar memória
 void destroy_queue(Queue* queue) {
     if (!queue) return;
     
@@ -102,7 +91,6 @@ void destroy_queue(Queue* queue) {
     free(queue);
 }
 
-// Imprimir conteúdo da fila (para debug)
 void print_queue(Queue* queue) {
     if (!queue || is_empty(queue)) {
         printf("Fila vazia\n");
@@ -123,17 +111,12 @@ void print_queue(Queue* queue) {
     printf("\n");
 }
 
-// ===== FUNÇÕES ADICIONAIS =====
-
-// Obter o tamanho atual da fila
 int queue_size(Queue* queue) {
     if (!queue) return 0;
     return queue->size;
 }
 
-// Espiar o primeiro elemento sem removê-lo
 Ghost queue_peek(Queue* queue) {
-    // Inicializar ghost vazio com todos os campos
     Ghost empty_ghost = {
         .pos = {-1, -1},
         .direction = NORTH,
@@ -157,13 +140,11 @@ Ghost queue_peek(Queue* queue) {
     return queue->front->ghost;
 }
 
-// Verificar se a fila está cheia (com limite máximo)
 int is_full(Queue* queue, int max_size) {
-    if (!queue) return 1; // Consider NULL queue as "full"
+    if (!queue) return 1;
     return queue->size >= max_size;
 }
 
-// Limpar todos os elementos da fila sem destruí-la
 void clear_queue(Queue* queue) {
     if (!queue) return;
     
@@ -176,7 +157,6 @@ void clear_queue(Queue* queue) {
     queue->size = 0;
 }
 
-// Buscar fantasma por ID na fila
 int find_ghost_in_queue(Queue* queue, int ghost_id) {
     if (!queue || is_empty(queue)) return 0;
     
@@ -185,16 +165,15 @@ int find_ghost_in_queue(Queue* queue, int ghost_id) {
     
     while (current) {
         if (current->ghost.ghost_id == ghost_id) {
-            return position; // Retorna posição (1-based)
+            return position;
         }
         current = current->next;
         position++;
     }
     
-    return 0; // Não encontrado
+    return 0;
 }
 
-// Contar fantasmas ativos na fila
 int count_active_ghosts(Queue* queue) {
     if (!queue || is_empty(queue)) return 0;
     
@@ -211,24 +190,17 @@ int count_active_ghosts(Queue* queue) {
     return count;
 }
 
-// Clonar/copiar uma fila
 Queue* clone_queue(Queue* source) {
     if (!source) return NULL;
     
     Queue* new_queue = create_queue();
     if (!new_queue) {
-        // LOG_E ou printf("Falha ao criar fila para clone.");
         return NULL;
     }
     
     QueueNode* current = source->front;
     while (current) {
         if (!enqueue(new_queue, current->ghost)) {
-            // LOG_E ou printf("Falha ao enfileirar elemento durante clone_queue na posição do fantasma ID %d.", current->ghost.ghost_id);
-            // Se enqueue falhar, a fila clonada estará incompleta.
-            // Poderia destruir new_queue e retornar NULL, ou retornar a cópia parcial.
-            // Por simplicidade, continua e retorna a cópia parcial, mas loga o erro idealmente.
-            // Para esta tarefa, apenas logamos um aviso (implícito, pois enqueue já imprime).
         }
         current = current->next;
     }
@@ -236,7 +208,6 @@ Queue* clone_queue(Queue* source) {
     return new_queue;
 }
 
-// Converter fila para array (para debug/análise)
 Ghost* queue_to_array(Queue* queue, int* array_size) {
     if (!queue || is_empty(queue) || !array_size) {
         if (array_size) *array_size = 0;
@@ -260,5 +231,5 @@ Ghost* queue_to_array(Queue* queue, int* array_size) {
         index++;
     }
     
-    return array; // Lembre-se de dar free() no array depois!
+    return array;
 }

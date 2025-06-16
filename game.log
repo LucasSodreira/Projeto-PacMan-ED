@@ -1,93 +1,35 @@
-[2025-06-14 21:08:35] [INFO] logger_init(): Logger inicializado - Arquivo: game.log, Nível mínimo: DEBUG
-[2025-06-14 21:08:35] [INFO] logger_game_started(): ═══════════════════════════
-[2025-06-14 21:08:35] [INFO] logger_game_started():     JOGO INICIADO
-[2025-06-14 21:08:35] [INFO] logger_game_started(): ═══════════════════════════
-[2025-06-14 21:08:35] [INFO] maze_init(): Labirinto inicializado: 50x30 com 192 pontos
-[2025-06-14 21:08:35] [INFO] player_init(): Jogador inicializado em (2,2) com 3 vidas
-[2025-06-14 21:08:35] [INFO] game_loop(): Jogo iniciado! Use WASD para mover, P para pausar, Q para sair
-[2025-06-14 21:08:38] [DEBUG] player_move(): Jogador moveu para (3,2)
-[2025-06-14 21:08:38] [DEBUG] logger_log_player_action(): Jogador moveu na posição (3,2)
-[2025-06-14 21:08:38] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,14) para (14,13)
-[2025-06-14 21:08:38] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (15,14) para (14,14)
-[2025-06-14 21:08:38] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,15) para (14,14)
-[2025-06-14 21:08:38] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (15,15) para (16,15)
-[2025-06-14 21:08:40] [DEBUG] player_move(): Jogador moveu para (4,2)
-[2025-06-14 21:08:40] [DEBUG] logger_log_player_action(): Jogador moveu na posição (4,2)
-[2025-06-14 21:08:40] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,13) para (14,12)
-[2025-06-14 21:08:40] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,14) para (14,15)
-[2025-06-14 21:08:40] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,14) para (14,13)
-[2025-06-14 21:08:40] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (16,15) para (17,15)
-[2025-06-14 21:08:41] [INFO] player_move(): Ponto coletado! Score: 10
-[2025-06-14 21:08:41] [DEBUG] player_move(): Jogador moveu para (5,2)
-[2025-06-14 21:08:41] [DEBUG] logger_log_player_action(): Jogador moveu na posição (5,2)
-[2025-06-14 21:08:41] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,12) para (14,11)
-[2025-06-14 21:08:41] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,15) para (14,16)
-[2025-06-14 21:08:41] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,13) para (14,12)
-[2025-06-14 21:08:41] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (17,15) para (18,15)
-[2025-06-14 21:08:45] [DEBUG] player_move(): Jogador moveu para (6,2)
-[2025-06-14 21:08:45] [DEBUG] logger_log_player_action(): Jogador moveu na posição (6,2)
-[2025-06-14 21:08:45] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,11) para (14,10)
-[2025-06-14 21:08:45] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,16) para (14,17)
-[2025-06-14 21:08:45] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,12) para (14,11)
-[2025-06-14 21:08:45] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (18,15) para (19,15)
-[2025-06-14 21:08:46] [DEBUG] player_move(): Jogador moveu para (7,2)
-[2025-06-14 21:08:46] [DEBUG] logger_log_player_action(): Jogador moveu na posição (7,2)
-[2025-06-14 21:08:46] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,10) para (14,9)
-[2025-06-14 21:08:46] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,17) para (14,18)
-[2025-06-14 21:08:46] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,11) para (14,10)
-[2025-06-14 21:08:46] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (19,15) para (20,15)
-[2025-06-14 21:08:47] [DEBUG] player_move(): Jogador moveu para (7,3)
-[2025-06-14 21:08:47] [DEBUG] logger_log_player_action(): Jogador moveu na posição (7,3)
-[2025-06-14 21:08:47] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,9) para (14,8)
-[2025-06-14 21:08:47] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,18) para (14,19)
-[2025-06-14 21:08:47] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,10) para (14,9)
-[2025-06-14 21:08:47] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (20,15) para (21,15)
-[2025-06-14 21:08:48] [DEBUG] player_move(): Jogador moveu para (7,4)
-[2025-06-14 21:08:48] [DEBUG] logger_log_player_action(): Jogador moveu na posição (7,4)
-[2025-06-14 21:08:48] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,8) para (14,7)
-[2025-06-14 21:08:48] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,19) para (14,20)
-[2025-06-14 21:08:48] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,9) para (14,8)
-[2025-06-14 21:08:48] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (21,15) para (22,15)
-[2025-06-14 21:08:48] [DEBUG] player_move(): Jogador moveu para (7,5)
-[2025-06-14 21:08:48] [DEBUG] logger_log_player_action(): Jogador moveu na posição (7,5)
-[2025-06-14 21:08:48] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,7) para (14,6)
-[2025-06-14 21:08:48] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,20) para (14,21)
-[2025-06-14 21:08:48] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,8) para (14,7)
-[2025-06-14 21:08:48] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (22,15) para (23,15)
-[2025-06-14 21:08:49] [DEBUG] player_move(): Jogador moveu para (7,6)
-[2025-06-14 21:08:49] [DEBUG] logger_log_player_action(): Jogador moveu na posição (7,6)
-[2025-06-14 21:08:49] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,6) para (14,5)
-[2025-06-14 21:08:49] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,21) para (14,22)
-[2025-06-14 21:08:49] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,7) para (14,6)
-[2025-06-14 21:08:49] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (23,15) para (24,15)
-[2025-06-14 21:08:50] [INFO] player_move(): Ponto coletado! Score: 20
-[2025-06-14 21:08:50] [DEBUG] player_move(): Jogador moveu para (7,7)
-[2025-06-14 21:08:50] [DEBUG] logger_log_player_action(): Jogador moveu na posição (7,7)
-[2025-06-14 21:08:50] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,5) para (14,4)
-[2025-06-14 21:08:50] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,22) para (14,23)
-[2025-06-14 21:08:50] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,6) para (14,5)
-[2025-06-14 21:08:50] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (24,15) para (25,15)
-[2025-06-14 21:08:51] [DEBUG] player_move(): Jogador moveu para (7,8)
-[2025-06-14 21:08:51] [DEBUG] logger_log_player_action(): Jogador moveu na posição (7,8)
-[2025-06-14 21:08:51] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,4) para (14,3)
-[2025-06-14 21:08:51] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,23) para (14,24)
-[2025-06-14 21:08:51] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,5) para (14,4)
-[2025-06-14 21:08:51] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (25,15) para (26,15)
-[2025-06-14 21:08:52] [DEBUG] player_move(): Jogador moveu para (8,8)
-[2025-06-14 21:08:52] [DEBUG] logger_log_player_action(): Jogador moveu na posição (8,8)
-[2025-06-14 21:08:52] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,3) para (14,2)
-[2025-06-14 21:08:52] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,24) para (14,25)
-[2025-06-14 21:08:52] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,4) para (14,3)
-[2025-06-14 21:08:52] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (26,15) para (27,15)
-[2025-06-14 21:08:53] [DEBUG] player_move(): Jogador moveu para (9,8)
-[2025-06-14 21:08:53] [DEBUG] logger_log_player_action(): Jogador moveu na posição (9,8)
-[2025-06-14 21:08:53] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (14,2) para (13,2)
-[2025-06-14 21:08:53] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,25) para (14,26)
-[2025-06-14 21:08:53] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,3) para (14,2)
-[2025-06-14 21:08:53] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (27,15) para (27,16)
-[2025-06-14 21:08:53] [DEBUG] player_move(): Jogador moveu para (10,8)
-[2025-06-14 21:08:53] [DEBUG] logger_log_player_action(): Jogador moveu na posição (10,8)
-[2025-06-14 21:08:53] [DEBUG] logger_log_ghost_movement(): Fantasma 0 moveu de (13,2) para (12,2)
-[2025-06-14 21:08:53] [DEBUG] logger_log_ghost_movement(): Fantasma 1 moveu de (14,26) para (14,27)
-[2025-06-14 21:08:53] [DEBUG] logger_log_ghost_movement(): Fantasma 2 moveu de (14,2) para (15,2)
-[2025-06-14 21:08:53] [DEBUG] logger_log_ghost_movement(): Fantasma 3 moveu de (27,16) para (27,17)
+[2025-06-16 00:46:40] [INFO] logger_init(): Logger inicializado - Arquivo: game.log, Nível mínimo: DEBUG
+[2025-06-16 00:46:40] [INFO] logger_game_started(): ═══════════════════════════
+[2025-06-16 00:46:40] [INFO] logger_game_started():     JOGO INICIADO
+[2025-06-16 00:46:40] [INFO] logger_game_started(): ═══════════════════════════
+[2025-06-16 00:46:40] [INFO] initialize_level(): Inicializando nível 1...
+[2025-06-16 00:46:40] [INFO] load_maze(): Carregando mapa: maps/level1.txt...
+[2025-06-16 00:46:40] [INFO] load_maze(): Mapa 'maps/level1.txt' carregado. Jogador em: (9,15), Fantasmas: 0, Pontos: 186.
+[2025-06-16 00:46:40] [INFO] maze_init(): Labirinto finalizado para nível 1. Jogador em (9,15), 0 fantasmas, 186 pontos.
+[2025-06-16 00:46:40] [INFO] player_init(): Jogador inicializado em (9,15). Vidas: 3, Score: 0.
+[2025-06-16 00:46:40] [INFO] initialize_level(): Nível 1 inicializado. Jogador em (9,15). Fantasmas ativos: 0. Score: 0. Vidas: 3. Fila de fantasmas com 0 elementos.
+[2025-06-16 00:46:46] [INFO] player_move(): Item '.' coletado em (8,15)! Score: 10
+[2025-06-16 00:46:46] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (8,15)
+[2025-06-16 00:46:47] [INFO] player_move(): Item '.' coletado em (7,15)! Score: 20
+[2025-06-16 00:46:47] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (7,15)
+[2025-06-16 00:46:48] [INFO] player_move(): Item '.' coletado em (6,15)! Score: 30
+[2025-06-16 00:46:48] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (6,15)
+[2025-06-16 00:46:49] [INFO] player_move(): Item '.' coletado em (5,15)! Score: 40
+[2025-06-16 00:46:49] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (5,15)
+[2025-06-16 00:46:50] [INFO] player_move(): Item '.' coletado em (4,15)! Score: 50
+[2025-06-16 00:46:50] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,15)
+[2025-06-16 00:46:51] [INFO] player_move(): Item '.' coletado em (4,14)! Score: 60
+[2025-06-16 00:46:51] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,14)
+[2025-06-16 00:46:53] [INFO] player_move(): Item '.' coletado em (4,13)! Score: 70
+[2025-06-16 00:46:53] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (4,13)
+[2025-06-16 00:46:54] [INFO] player_move(): Item '.' coletado em (3,13)! Score: 80
+[2025-06-16 00:46:54] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (3,13)
+[2025-06-16 00:46:55] [INFO] player_move(): Item '.' coletado em (2,13)! Score: 90
+[2025-06-16 00:46:55] [DEBUG] logger_log_player_action(): Jogador moveu para na posição (2,13)
+[2025-06-16 00:46:58] [INFO] process_player_input(): Jogo encerrado pelo jogador.
+[2025-06-16 00:46:58] [INFO] logger_game_ended(): ═══════════════════════════
+[2025-06-16 00:46:58] [INFO] logger_game_ended():     JOGO FINALIZADO
+[2025-06-16 00:46:58] [INFO] logger_game_ended(): Pontuação final: 90
+[2025-06-16 00:46:58] [INFO] logger_game_ended(): Tempo jogado: 1 segundos
+[2025-06-16 00:46:58] [INFO] logger_game_ended(): ═══════════════════════════
+[2025-06-16 00:46:58] [INFO] logger_shutdown(): Encerrando logger - Total de mensagens: 34

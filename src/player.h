@@ -1,8 +1,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "utils.h"
-#include "maze.h"
+#include "utils.h"    // Para Position, Direction, Player, GameState
+
+// Forward declaration para Maze
+typedef struct Maze Maze;
 
 // Inicializa o player (posição e valores iniciais)
 void player_init(Player* player, Position start_pos);

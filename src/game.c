@@ -1,9 +1,109 @@
 #include "game.h"
 #include "logger.h"
 #include "config.h"
+#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+
+// ===== FUNÇÕES DE INTERFACE =====
+
+void show_title_screen(void) {
+    clear_screen();
+    printf("\n");
+    
+    // ASCII Art do título com cores - apenas caracteres ASCII básicos
+    printf("\x1b[33;1m"); // Amarelo brilhante
+    printf("    +===============================================+\n");
+    printf("    |                                               |\n");
+    printf("    |   ######   #####   ######      ###    ###    |\n");
+    printf("    |   #    ## ##   ## ##          ####  ####     |\n");
+    printf("    |   ######  ####### ##          ## #### ##     |\n");
+    printf("    |   ##      ##   ## ##          ##  ##  ##     |\n");
+    printf("    |   ##      ##   ##  ######     ##      ##     |\n");
+    printf("    |                                               |\n");
+    printf("    |                 ###    ###  #####  ##    ##  |\n");
+    printf("    |                 ####  #### ##   ## ###   ##  |\n");
+    printf("    |                 ## #### ## ####### ####  ##  |\n");
+    printf("    |                 ##  ##  ## ##   ## ## ## ##  |\n");
+    printf("    |                 ##      ## ##   ## ##  ####  |\n");
+    printf("    |                                               |\n");
+    printf("    |                T E R M I N A L                |\n");
+    printf("    |                                               |\n");
+    printf("    |                 Versao %s                     |\n", GAME_VERSION);
+    printf("    |                                               |\n");
+    printf("    +===============================================+\n");
+    printf("\x1b[0m"); // Reset cor
+    
+    printf("\n");
+    printf("\x1b[36m"); // Ciano para informações
+    printf("    +---------------------------------------------+\n");
+    printf("    |               INFORMACOES                   |\n");
+    printf("    +---------------------------------------------+\n");
+    printf("    | Projeto    : %-27s |\n", GAME_TITLE);
+    printf("    | Autor      : %-27s |\n", GAME_AUTHOR);
+    printf("    | Disciplina : Estruturas de Dados           |\n");
+    printf("    +---------------------------------------------+\n");
+    printf("\x1b[0m"); // Reset cor
+    printf("\n");
+    print_instructions();
+}
+
+void show_game_over_screen(Player* player, GameStatus game_status, int current_level) {
+    clear_screen();
+    printf("\n\n");
+    
+    if (game_status == VICTORY) {
+        printf("\x1b[32;1m"); // Verde brilhante para vitória
+        printf("    +===================================================+\n");
+        printf("    |                                                   |\n");
+        printf("    |  ##    ## ## ########  ######  ######  ## #####  |\n");
+        printf("    |  ##    ## ##    ##    ##    ## ##   ## ####   ## |\n");
+        printf("    |  ##    ## ##    ##    ##    ## ######  ## #####  |\n");
+        printf("    |   ##  ##  ##    ##    ##    ## ##   ## ####   ## |\n");
+        printf("    |    ####   ##    ##     ######  ##   ## ## #####  |\n");
+        printf("    |                                                   |\n");
+        printf("    |                  PARABENS!                        |\n");
+        printf("    |             Voce venceu o jogo!                   |\n");
+        printf("    |                                                   |\n");
+        printf("    +===================================================+\n");
+        printf("\x1b[0m"); // Reset cor
+    } else {
+        printf("\x1b[31;1m"); // Vermelho brilhante para game over
+        printf("    +===============================================+\n");
+        printf("    |                                               |\n");
+        printf("    |        ######   #####  ###    ### #######    |\n");
+        printf("    |       ##       ##   ## ####  #### ##         |\n");
+        printf("    |       ##   ### ####### ## #### ## #####      |\n");
+        printf("    |       ##    ## ##   ## ##  ##  ## ##         |\n");
+        printf("    |        ######  ##   ## ##      ## #######    |\n");
+        printf("    |                                               |\n");
+        printf("    |         ######  ##    ## ####### ######      |\n");
+        printf("    |        ##    ## ##    ## ##      ##   ##     |\n");
+        printf("    |        ##    ## ##    ## #####   ######      |\n");
+        printf("    |        ##    ##  ##  ##  ##      ##   ##     |\n");
+        printf("    |         ######    ####   ####### ##   ##     |\n");
+        printf("    |                                               |\n");
+        printf("    +===============================================+\n");
+        printf("\x1b[0m"); // Reset cor
+    }
+    
+    printf("\n");
+    printf("\x1b[36m"); // Ciano para estatísticas
+    printf("    +---------------------------------------------+\n");
+    printf("    |            ESTATISTICAS FINAIS              |\n");
+    printf("    +---------------------------------------------+\n");
+    printf("    | Pontuacao Final : \x1b[33;1m%-12d\x1b[36m        |\n", player->score);
+    printf("    | Nivel Alcancado : \x1b[32;1m%-12d\x1b[36m        |\n", current_level);
+    printf("    | Vidas Restantes : \x1b[31;1m%-12d\x1b[36m        |\n", player->lives);
+    printf("    +---------------------------------------------+\n");
+    printf("\x1b[0m"); // Reset cor
+    printf("\n");
+    printf("\x1b[33m    Pressione ENTER para sair...\x1b[0m\n");
+    getchar();
+}
+
+// ===== FUNÇÕES DE LÓGICA DO JOGO =====
 
 void update_game(Ghost ghosts[], int ghost_count, Position *pacman_pos, bool *game_over, const char* maze) {
     // Log player position
@@ -19,61 +119,10 @@ void update_game(Ghost ghosts[], int ghost_count, Position *pacman_pos, bool *ga
     }
 }
 
-void draw_game(Ghost ghosts[], int ghost_count, Position pacman_pos, const char* maze) {
-    clear_screen();
-    
-    // Print top border with game title
-    printf("╔");
-    for (int i = 0; i < MAX_MAP_WIDTH; i++) printf("═");
-    printf("╗\n");
+// ===== FUNÇÕES DE LÓGICA DO JOGO =====
 
-    // Print maze with game elements
-    for (int y = 0; y < MAX_MAP_HEIGHT; y++) {
-        printf("║");
-        for (int x = 0; x < MAX_MAP_WIDTH; x++) {
-            Position current = {x, y};
-            char symbol = maze[y * MAX_MAP_WIDTH + x];
-
-            // Check for game elements at this position
-            bool is_ghost = false;
-            for (int i = 0; i < ghost_count; i++) {
-                if (positions_equal(ghosts[i].pos, current)) {
-                    // Color for each ghost type
-                    int color = COLOR_RESET;
-                    switch (ghosts[i].symbol) {
-                        case SYMBOL_GHOST_RED:   color = COLOR_GHOST_RED; break;
-                        case SYMBOL_GHOST_GREEN: color = COLOR_GHOST_GREEN; break;
-                        case SYMBOL_GHOST_BLUE:  color = COLOR_GHOST_BLUE; break;
-                        case SYMBOL_GHOST_PINK:  color = COLOR_GHOST_PINK; break;
-                        default: color = COLOR_RESET;
-                    }
-                    printf("\x1b[%dm%c\x1b[0m", color, ghosts[i].symbol);
-                    is_ghost = true;
-                    break;
-                }
-            }
-
-            if (!is_ghost) {
-                if (positions_equal(pacman_pos, current)) {
-                    printf("\x1b[%dm%c\x1b[0m", COLOR_PLAYER, SYMBOL_PLAYER);
-                } else {
-                    switch (symbol) {
-                        case SYMBOL_WALL: printf("\x1b[%dm█\x1b[0m", COLOR_WALL); break;
-                        case SYMBOL_DOT: printf("\x1b[%dm·\x1b[0m", COLOR_DOT); break;
-                        case SYMBOL_POWER_PELLET: printf("\x1b[%dmO\x1b[0m", COLOR_DOT); break;
-                        default: printf("%c", SYMBOL_EMPTY_SPACE); break;
-                    }
-                }
-            }
-        }
-        printf("║\n");
-    }
-
-    // Print bottom border
-    printf("╚");
-    for (int i = 0; i < MAX_MAP_WIDTH; i++) printf("═");
-    printf("╝\n");
-}
+// Note: draw_game foi movida para maze.c como maze_render_with_ghosts
+// para consolidar todas as funções de renderização em um lugar
 
 bool process_player_input(char input, Position* pacman_pos, const char* maze, GameStatus* status) {
     Direction dir = NORTH;

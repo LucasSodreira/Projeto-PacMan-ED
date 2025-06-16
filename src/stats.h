@@ -1,8 +1,10 @@
 #ifndef STATS_H
 #define STATS_H
 
-#include "utils.h"
 #include <time.h>
+
+// Forward declarations
+typedef struct Player Player;
 
 // Estrutura para estatísticas da fila
 typedef struct {

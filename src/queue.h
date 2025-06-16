@@ -1,8 +1,8 @@
 #ifndef QUEUE_H
 #define QUEUE_H
  
-#include "ghost.h"
-#include "utils.h"  // Inclui as definições de Position e Ghost
+#include "utils.h"  // Para Position, Direction básicos
+#include "ghost.h"  // Para Ghost completo
 
 // Nó da fila
 typedef struct QueueNode {

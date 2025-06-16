@@ -1,5 +1,4 @@
-# Makefile para o Projeto Pac-Man
-# Compilador e flags
+# ===== CONFIGURAÇÃO DO MAKEFILE =====
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -g -I$(SRCDIR)
 SRCDIR = src
@@ -7,214 +6,223 @@ TESTDIR = test
 OBJDIR = obj
 BINDIR = bin
 
-# Detectar sistema operacional
+# ===== DETECÇÃO DE SISTEMA =====
 ifeq ($(OS),Windows_NT)
     EXE_EXT = .exe
     RM = del /Q
-    MKDIR = if not exist $(1) mkdir $(1)
-    RMDIR = if exist $(1) rmdir /S /Q $(1)
-    # Função para criar diretório no Windows
-    define create_dir
-    	if not exist $(1) mkdir $(1)
-    endef
+    RMDIR = rmdir /S /Q
+    MKDIR = mkdir
 else
     EXE_EXT = 
     RM = rm -f
-    MKDIR = mkdir -p
     RMDIR = rm -rf
-    # Função para criar diretório no Linux/macOS
-    define create_dir
-    	mkdir -p $(1)
-    endef
+    MKDIR = mkdir -p
 endif
 
-# Arquivos fonte implementados - INCLUIR TODOS OS MÓDULOS
-CORE_SOURCES = $(SRCDIR)/queue.c $(SRCDIR)/utils.c
-ADVANCED_SOURCES = $(CORE_SOURCES) $(SRCDIR)/stats.c $(SRCDIR)/logger.c
-GAME_SOURCES = $(ADVANCED_SOURCES) $(SRCDIR)/player.c $(SRCDIR)/maze.c
+# ===== ARQUIVOS FONTE ORGANIZADOS =====
+# Módulos básicos
+CORE_SOURCES = $(SRCDIR)/utils.c $(SRCDIR)/queue.c
+
+# Sistemas avançados  
+SYSTEM_SOURCES = $(CORE_SOURCES) $(SRCDIR)/logger.c $(SRCDIR)/stats.c
+
+# Componentes do jogo
+GAME_SOURCES = $(SYSTEM_SOURCES) $(SRCDIR)/maze.c $(SRCDIR)/player.c
+
+# Jogo completo
 ALL_SOURCES = $(GAME_SOURCES) $(SRCDIR)/ghost.c $(SRCDIR)/game.c $(SRCDIR)/main.c
 
-# Objetos correspondentes
-CORE_OBJECTS = $(CORE_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
-ADVANCED_OBJECTS = $(ADVANCED_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
-GAME_OBJECTS = $(GAME_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+# ===== OBJETOS =====
 ALL_OBJECTS = $(ALL_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
-# Executáveis de teste (apenas os que podem ser compilados)
+# ===== EXECUTÁVEIS =====
+PACMAN_GAME = $(BINDIR)/pacman$(EXE_EXT)
 TEST_BASIC = $(BINDIR)/test_structs$(EXE_EXT)
 TEST_ADVANCED = $(BINDIR)/test_advanced$(EXE_EXT)
 TEST_COMPLETE = $(BINDIR)/test_complete$(EXE_EXT)
 TEST_PLAYER = $(BINDIR)/test_player$(EXE_EXT)
 
-# Executáveis
-PACMAN_GAME = $(BINDIR)/pacman$(EXE_EXT)
+# ===== TARGETS PRINCIPAIS =====
 
-# Alvo padrão - agora incluindo o jogo completo
-all: dirs $(TEST_BASIC) $(TEST_ADVANCED) $(TEST_COMPLETE) $(TEST_PLAYER) $(PACMAN_GAME)
+# Target padrão
+all: dirs $(PACMAN_GAME) tests
 
-# Criar diretórios necessários - CORRIGIDO
+# Jogo principal
+game: $(PACMAN_GAME)
+
+# Todos os testes
+tests: $(TEST_BASIC) $(TEST_ADVANCED) $(TEST_COMPLETE) $(TEST_PLAYER)
+
+# ===== COMPILAÇÃO =====
+
+# Criar diretórios
 dirs:
-	@echo "Criando diretórios..."
+	@echo "📁 Criando diretórios..."
 ifeq ($(OS),Windows_NT)
-	@if not exist $(OBJDIR) mkdir $(OBJDIR)
-	@if not exist $(BINDIR) mkdir $(BINDIR)
+	@if not exist $(OBJDIR) $(MKDIR) $(OBJDIR)
+	@if not exist $(BINDIR) $(MKDIR) $(BINDIR)
 else
 	@$(MKDIR) $(OBJDIR) $(BINDIR)
 endif
 
-# Compilar objetos individuais - CORRIGIR DEPENDÊNCIA
+# Compilar objetos
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | dirs
-	@echo "Compilando $<..."
-	$(CC) $(CFLAGS) -c $< -o $@
+	@echo "🔨 Compilando $<..."
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-# Teste básico das estruturas (queue + utils)
-$(TEST_BASIC): $(CORE_OBJECTS) $(TESTDIR)/test_structs.c
-	@echo "Linkando teste básico..."
-	$(CC) $(CFLAGS) $(CORE_OBJECTS) $(TESTDIR)/test_structs.c -o $@
-
-# Teste avançado das estruturas (queue + utils)
-$(TEST_ADVANCED): $(CORE_OBJECTS) $(TESTDIR)/test_advanced.c
-	@echo "Linkando teste avançado..."
-	$(CC) $(CFLAGS) $(CORE_OBJECTS) $(TESTDIR)/test_advanced.c -o $@
-
-# Teste completo do sistema (todos os módulos avançados)
-$(TEST_COMPLETE): $(ADVANCED_OBJECTS) $(TESTDIR)/test_complete.c
-	@echo "Linkando teste completo..."
-	$(CC) $(CFLAGS) $(ADVANCED_OBJECTS) $(TESTDIR)/test_complete.c -o $@
-
-# Teste integrado Player + Maze
-$(TEST_PLAYER): $(GAME_OBJECTS) $(TESTDIR)/test_player.c
-	@echo "Linkando teste do player..."
-	$(CC) $(CFLAGS) $(GAME_OBJECTS) $(TESTDIR)/test_player.c -o $@
-
-# Jogo completo
+# Jogo principal
 $(PACMAN_GAME): $(ALL_OBJECTS)
-	@echo "Linkando jogo completo..."
-	$(CC) $(CFLAGS) $(ALL_OBJECTS) -o $@
+	@echo "🎮 Linkando jogo Pac-Man..."
+	@$(CC) $(CFLAGS) $(ALL_OBJECTS) -o $@
+	@echo "✅ Jogo compilado: $@"
 
-# Executar testes disponíveis
-test: all
-	@echo "=== Executando Teste Básico ==="
-	$(TEST_BASIC)
-	@echo ""
-	@echo "=== Executando Teste Avançado ==="
-	$(TEST_ADVANCED)
-	@echo ""
-	@echo "=== Executando Teste Completo ==="
-	$(TEST_COMPLETE)
-	@echo ""
-	@echo "=== Executando Teste do Player ==="
-	$(TEST_PLAYER)
+# ===== TESTES =====
 
-# Executar jogo
-run-game: $(PACMAN_GAME)
-	@echo "Executando Pac-Man..."
-	$(PACMAN_GAME)
+$(TEST_BASIC): $(OBJDIR)/utils.o $(OBJDIR)/queue.o $(TESTDIR)/test_structs.c | dirs
+	@echo "🧪 Compilando teste básico..."
+	@$(CC) $(CFLAGS) $^ -o $@
+
+$(TEST_ADVANCED): $(OBJDIR)/utils.o $(OBJDIR)/queue.o $(TESTDIR)/test_advanced.c | dirs
+	@echo "🧪 Compilando teste avançado..."
+	@$(CC) $(CFLAGS) $^ -o $@
+
+$(TEST_COMPLETE): $(OBJDIR)/utils.o $(OBJDIR)/queue.o $(OBJDIR)/logger.o $(OBJDIR)/stats.o $(TESTDIR)/test_complete.c | dirs
+	@echo "🧪 Compilando teste completo..."
+	@$(CC) $(CFLAGS) $^ -o $@
+
+$(TEST_PLAYER): $(filter-out $(OBJDIR)/main.o, $(ALL_OBJECTS)) $(TESTDIR)/test_player.c | dirs
+	@echo "🧪 Compilando teste do player..."
+	@$(CC) $(CFLAGS) $^ -o $@
+
+# ===== EXECUÇÃO =====
+
+# Executar o jogo
+run: $(PACMAN_GAME)
+	@echo "🚀 Iniciando Pac-Man..."
+	@$(PACMAN_GAME)
+
+# Executar todos os testes
+test: tests
+	@echo "🧪 Executando todos os testes..."
+	@echo "=== Teste Básico ==="
+	@$(TEST_BASIC)
+	@echo "=== Teste Avançado ==="  
+	@$(TEST_ADVANCED)
+	@echo "=== Teste Completo ==="
+	@$(TEST_COMPLETE)
+	@echo "=== Teste Player ==="
+	@$(TEST_PLAYER)
+	@echo "✅ Todos os testes concluídos!"
 
 # Testes individuais
 test-basic: $(TEST_BASIC)
-	@echo "Executando teste básico..."
-	$(TEST_BASIC)
+	@$(TEST_BASIC)
 
 test-advanced: $(TEST_ADVANCED)
-	@echo "Executando teste avançado..."
-	$(TEST_ADVANCED)
+	@$(TEST_ADVANCED)
 
 test-complete: $(TEST_COMPLETE)
-	@echo "Executando teste completo..."
-	$(TEST_COMPLETE)
+	@$(TEST_COMPLETE)
 
 test-player: $(TEST_PLAYER)
-	@echo "Executando teste do player..."
-	$(TEST_PLAYER)
+	@$(TEST_PLAYER)
 
-# Compilação com debug
-debug: CFLAGS += -DDEBUG -O0
-debug: all
+# ===== VARIAÇÕES DE COMPILAÇÃO =====
 
-# Compilação otimizada
+# Debug
+debug: CFLAGS += -DDEBUG -O0 -g3
+debug: clean all
+	@echo "🐛 Versão debug compilada"
+
+# Release
 release: CFLAGS += -O2 -DNDEBUG
-release: all
+release: clean all
+	@echo "🚀 Versão release compilada"
 
-# Verificar arquivos necessários - ATUALIZADO
-check:
-	@echo "Verificando arquivos fonte..."
-	@echo "Implementados:"
-	@for file in $(ALL_SOURCES); do \
-		if [ -f $$file ]; then echo "  ✓ $$file"; else echo "  ✗ $$file (faltando)"; fi; \
-	done
-	@echo ""
-	@echo "Pendentes para jogo completo:"
-	@echo "  ✗ $(SRCDIR)/ghost.c"
-	@echo "  ✗ $(SRCDIR)/game.c" 
-	@echo "  ✗ $(SRCDIR)/main.c"
+# Profiling
+profile: CFLAGS += -pg -O2
+profile: clean all
+	@echo "📊 Versão profiling compilada"
 
-# Limpar arquivos compilados - CORRIGIDO
+# ===== LIMPEZA =====
+
 clean:
-	@echo "Limpando arquivos compilados..."
+	@echo "🧹 Limpando arquivos..."
 ifeq ($(OS),Windows_NT)
-	@if exist $(OBJDIR) rmdir /S /Q $(OBJDIR)
-	@if exist $(BINDIR) rmdir /S /Q $(BINDIR)
-	@if exist *.exe del /Q *.exe
-	@if exist game.log del /Q game.log
-	@if exist test_log.txt del /Q test_log.txt
-	@if exist test_stats.dat del /Q test_stats.dat
+	@if exist $(OBJDIR) $(RMDIR) $(OBJDIR)
+	@if exist $(BINDIR) $(RMDIR) $(BINDIR)
+	@if exist *.log $(RM) *.log
+	@if exist *.dat $(RM) *.dat
 else
 	@$(RMDIR) $(OBJDIR) $(BINDIR) 2>/dev/null || true
-	@$(RM) game.log test_log.txt test_stats.dat 2>/dev/null || true
+	@$(RM) *.log *.dat 2>/dev/null || true
 endif
-	@echo "Limpeza concluída!"
+	@echo "✅ Limpeza concluída"
 
-# Mostrar informações
+# Limpeza completa
+distclean: clean
+	@echo "🗑️  Limpeza completa..."
+	@$(RM) tags cscope.* 2>/dev/null || true
+
+# ===== INFORMAÇÕES =====
+
 info:
-	@echo "=== Informações do Projeto ==="
-	@echo "Projeto: Pac-Man Terminal"
-	@echo "Compilador: $(CC)"
-	@echo "Flags: $(CFLAGS)"
-	@echo "Sistema: $(if $(OS),$(OS),Unix-like)"
-	@echo ""
-	@echo "Módulos implementados:"
-	@echo "  ✓ Queue (FIFO)"
-	@echo "  ✓ Utils (funções auxiliares)"
-	@echo "  ✓ Logger (sistema de logging)"
-	@echo "  ✓ Stats (estatísticas)"
-	@echo "  ✓ Player (lógica do jogador)"
-	@echo "  ✓ Maze (renderização de mapas)"
-	@echo ""
-	@echo "Pendentes:"
-	@echo "  ⏳ Ghost (IA dos fantasmas)"
-	@echo "  ⏳ Game (loop principal)"
-	@echo "  ⏳ Main (integração final)"
+	@echo "╔════════════════════════════════════╗"
+	@echo "║       INFORMAÇÕES DO PROJETO       ║"
+	@echo "╚════════════════════════════════════╝"
+	@echo "📦 Projeto: Pac-Man Terminal"
+	@echo "🔧 Compilador: $(CC)"
+	@echo "⚙️  Flags: $(CFLAGS)"
+	@echo "💻 Sistema: $(if $(OS),$(OS),Unix-like)"
+	@echo "📁 Diretórios: src/, test/, obj/, bin/"
+	@echo "🎯 Executáveis: $(words $(ALL_SOURCES)) módulos"
+	@echo "✅ Status: 100% implementado"
 
-# Verificar estilo de código (básico)
-check-style:
-	@echo "Verificando arquivos de código..."
-	@for file in $(SRCDIR)/*.c $(SRCDIR)/*.h; do \
-		if [ -f "$$file" ]; then \
-			echo "✓ $$file existe"; \
-		fi; \
-	done
+status:
+	@echo "📊 STATUS DOS MÓDULOS:"
+	@echo "  ✅ utils.c/h     - Funções utilitárias"
+	@echo "  ✅ queue.c/h     - Fila FIFO" 
+	@echo "  ✅ logger.c/h    - Sistema de logging"
+	@echo "  ✅ stats.c/h     - Estatísticas"
+	@echo "  ✅ maze.c/h      - Labirinto"
+	@echo "  ✅ player.c/h    - Jogador"
+	@echo "  ✅ ghost.c/h     - IA dos fantasmas"
+	@echo "  ✅ game.c/h      - Lógica do jogo"
+	@echo "  ✅ main.c/h      - Loop principal"
+	@echo "  ✅ config.h      - Configurações"
 
-# Instalar dependências (placeholder)
-install:
-	@echo "Verificando dependências..."
-	@echo "GCC: $(shell $(CC) --version 2>/dev/null | head -n1 || echo 'Não encontrado')"
-	@echo "Make: $(shell make --version 2>/dev/null | head -n1 || echo 'Não encontrado')"
-
-# Targets que não são arquivos
-.PHONY: all dirs test test-basic test-advanced test-complete test-player run-game debug release clean info check-style check install help
-
-# Ajuda - ATUALIZADA
 help:
-	@echo "=== Makefile do Projeto Pac-Man ==="
+	@echo "🎮 MAKEFILE DO PAC-MAN TERMINAL"
 	@echo ""
-	@echo "Targets disponíveis:"
-	@echo "  all           - Compilar tudo (testes + jogo)"
-	@echo "  run-game      - Executar o jogo Pac-Man"
-	@echo "  test          - Executar todos os testes"
-	@echo "  test-player   - Executar teste integrado (player + maze)"
+	@echo "📋 TARGETS PRINCIPAIS:"
+	@echo "  make run         - Compilar e executar o jogo"
+	@echo "  make game        - Apenas compilar o jogo"  
+	@echo "  make test        - Executar todos os testes"
+	@echo "  make all         - Compilar tudo"
 	@echo ""
-	@echo "Exemplo de uso:"
-	@echo "  make run-game       # Jogar Pac-Man!"
-	@echo "  make test-player    # Testar funcionalidade atual"
-	@echo "  make clean && make  # Rebuild completo"
+	@echo "🧪 TESTES:"
+	@echo "  make test-basic    - Teste das estruturas básicas"
+	@echo "  make test-advanced - Teste das funcionalidades avançadas"
+	@echo "  make test-complete - Teste de integração completa"
+	@echo "  make test-player   - Teste do sistema de jogador"
+	@echo ""
+	@echo "🔧 COMPILAÇÃO:"
+	@echo "  make debug       - Versão com debug"
+	@echo "  make release     - Versão otimizada"
+	@echo "  make profile     - Versão com profiling"
+	@echo ""
+	@echo "🧹 LIMPEZA:"
+	@echo "  make clean       - Limpar arquivos compilados"
+	@echo "  make distclean   - Limpeza completa"
+	@echo ""
+	@echo "ℹ️  INFORMAÇÕES:"
+	@echo "  make info        - Informações do projeto"
+	@echo "  make status      - Status dos módulos"
+	@echo "  make help        - Esta ajuda"
+
+# ===== PHONY TARGETS =====
+.PHONY: all game tests dirs run test test-basic test-advanced test-complete test-player
+.PHONY: debug release profile clean distclean info status help
+
+# Target padrão quando chamado sem argumentos
+.DEFAULT_GOAL := run

@@ -3,7 +3,6 @@
 #include "ghost.h"
 #include "queue.h"
 
-// Criar uma nova fila
 Queue* create_queue() {
     Queue* queue = (Queue*)malloc(sizeof(Queue));
     if (!queue) {
@@ -17,14 +16,15 @@ Queue* create_queue() {
     return queue;
 }
 
-// Adicionar fantasma no final da fila
-void enqueue(Queue* queue, Ghost ghost) {
-    if (!queue) return;
+bool enqueue(Queue* queue, Ghost ghost) {
+    if (!queue) {
+        return false;
+    }
     
     QueueNode* new_node = (QueueNode*)malloc(sizeof(QueueNode));
     if (!new_node) {
-        printf("Erro: Não foi possível alocar memória para novo nó\n");
-        return;
+        printf("Erro Crítico: Falha ao alocar memória para novo nó da fila.\n");
+        return false;
     }
     
     new_node->ghost = ghost;
@@ -39,11 +39,10 @@ void enqueue(Queue* queue, Ghost ghost) {
     }
     
     queue->size++;
+    return true;
 }
 
-// Remover fantasma do início da fila
 Ghost dequeue(Queue* queue) {
-    // Inicializar ghost vazio com todos os campos
     Ghost empty_ghost = {
         .pos = {-1, -1},
         .direction = NORTH,
@@ -78,12 +77,10 @@ Ghost dequeue(Queue* queue) {
     return ghost;
 }
 
-// Verificar se a fila está vazia
 int is_empty(Queue* queue) {
     return (queue == NULL || queue->front == NULL);
 }
 
-// Destruir a fila e liberar memória
 void destroy_queue(Queue* queue) {
     if (!queue) return;
     
@@ -94,7 +91,6 @@ void destroy_queue(Queue* queue) {
     free(queue);
 }
 
-// Imprimir conteúdo da fila (para debug)
 void print_queue(Queue* queue) {
     if (!queue || is_empty(queue)) {
         printf("Fila vazia\n");
@@ -115,17 +111,12 @@ void print_queue(Queue* queue) {
     printf("\n");
 }
 
-// ===== FUNÇÕES ADICIONAIS =====
-
-// Obter o tamanho atual da fila
 int queue_size(Queue* queue) {
     if (!queue) return 0;
     return queue->size;
 }
 
-// Espiar o primeiro elemento sem removê-lo
 Ghost queue_peek(Queue* queue) {
-    // Inicializar ghost vazio com todos os campos
     Ghost empty_ghost = {
         .pos = {-1, -1},
         .direction = NORTH,
@@ -149,13 +140,11 @@ Ghost queue_peek(Queue* queue) {
     return queue->front->ghost;
 }
 
-// Verificar se a fila está cheia (com limite máximo)
 int is_full(Queue* queue, int max_size) {
-    if (!queue) return 1; // Consider NULL queue as "full"
+    if (!queue) return 1;
     return queue->size >= max_size;
 }
 
-// Limpar todos os elementos da fila sem destruí-la
 void clear_queue(Queue* queue) {
     if (!queue) return;
     
@@ -168,7 +157,6 @@ void clear_queue(Queue* queue) {
     queue->size = 0;
 }
 
-// Buscar fantasma por ID na fila
 int find_ghost_in_queue(Queue* queue, int ghost_id) {
     if (!queue || is_empty(queue)) return 0;
     
@@ -177,16 +165,15 @@ int find_ghost_in_queue(Queue* queue, int ghost_id) {
     
     while (current) {
         if (current->ghost.ghost_id == ghost_id) {
-            return position; // Retorna posição (1-based)
+            return position;
         }
         current = current->next;
         position++;
     }
     
-    return 0; // Não encontrado
+    return 0;
 }
 
-// Contar fantasmas ativos na fila
 int count_active_ghosts(Queue* queue) {
     if (!queue || is_empty(queue)) return 0;
     
@@ -203,23 +190,24 @@ int count_active_ghosts(Queue* queue) {
     return count;
 }
 
-// Clonar/copiar uma fila
 Queue* clone_queue(Queue* source) {
     if (!source) return NULL;
     
     Queue* new_queue = create_queue();
-    if (!new_queue) return NULL;
+    if (!new_queue) {
+        return NULL;
+    }
     
     QueueNode* current = source->front;
     while (current) {
-        enqueue(new_queue, current->ghost);
+        if (!enqueue(new_queue, current->ghost)) {
+        }
         current = current->next;
     }
     
     return new_queue;
 }
 
-// Converter fila para array (para debug/análise)
 Ghost* queue_to_array(Queue* queue, int* array_size) {
     if (!queue || is_empty(queue) || !array_size) {
         if (array_size) *array_size = 0;
@@ -243,5 +231,5 @@ Ghost* queue_to_array(Queue* queue, int* array_size) {
         index++;
     }
     
-    return array; // Lembre-se de dar free() no array depois!
+    return array;
 }

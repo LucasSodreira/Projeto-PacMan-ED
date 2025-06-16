@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <math.h>
 #include <time.h>
+#include "config.h"
 
 #ifdef _WIN32
     #include <windows.h>
@@ -18,16 +19,12 @@
     #include <fcntl.h>
 #endif
 
-#include "config.h"
-#include "stats.h"
-
 // ===== FORWARD DECLARATIONS =====
-// Declarações antecipadas para evitar dependências circulares
 typedef struct Position Position;
 typedef struct Player Player;
-typedef struct Maze Maze;
+typedef struct Ghost Ghost;
 
-// Enums dos fantasmas (definidos aqui para serem usados por Ghost)
+// ===== ENUMS COMPARTILHADOS =====
 typedef enum {
     GHOST_NORMAL,
     GHOST_FRIGHTENED,
@@ -40,14 +37,13 @@ typedef enum {
     DIFFICULTY_HARD
 } DifficultyLevel;
 
-typedef struct Ghost Ghost;
-
 // Enums são definidos aqui pois são tipos fundamentais
 typedef enum {
     NORTH = 0,
     EAST = 1, 
     SOUTH = 2,
-    WEST = 3
+    WEST = 3,
+    DIR_INVALID = -1
 } Direction;
 
 typedef enum {
@@ -68,6 +64,8 @@ struct Player {
     int lives;
     char symbol;
 };
+
+
 
 
 // ===== ESTRUTURA DE ESTADO DO JOGO (sem Ghost para evitar circular dependency) =====
@@ -119,13 +117,6 @@ void initialize_game_state(GameState* game);
 void print_game_stats(GameState* game);
 
 // ===== FUNÇÕES DE INICIALIZAÇÃO DE SISTEMA =====
-
-int initialize_game_systems(QueueStats** queue_stats, 
-                            GameStats** game_stats, 
-                            ProfileData** ai_profile);
-void cleanup_game_systems(QueueStats* queue_stats, 
-                         GameStats* game_stats, 
-                         ProfileData* ai_profile,
-                         Player* player);
+// Movidas para stats.h para evitar dependências circulares
 
 #endif // UTILS_H

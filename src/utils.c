@@ -1,8 +1,7 @@
+#include "config.h"
 #include "utils.h"
-#include "logger.h"
-#include "stats.h"
-#include "ghost.h"
 #include "maze.h"
+#include "logger.h"
 #include <time.h>    // Para srand() e time()
 
 #ifdef _WIN32
@@ -148,6 +147,10 @@ Position get_next_position(Position pos, Direction dir) {
         case EAST:  next_pos.x++; break;
         case SOUTH: next_pos.y++; break;
         case WEST:  next_pos.x--; break;
+        case DIR_INVALID:
+        default:
+            // Não move se direção inválida
+            break;
     }
     
     return next_pos;
@@ -254,48 +257,3 @@ void print_game_stats(GameState* game) {
     printf("═══════════════════════════════════════\n");
 }
 
-// ===== FUNÇÕES DE INICIALIZAÇÃO DE SISTEMA =====
-
-int initialize_game_systems(QueueStats** queue_stats, 
-                            GameStats** game_stats, 
-                            ProfileData** ai_profile) {
-    // Inicializar sistemas
-    if (!logger_init(DEFAULT_LOG_FILE, LOG_DEBUG)) {
-        printf("[ERROR] Erro: Falha ao inicializar sistema de logging\n");
-        return 0;
-    }
-      logger_game_started();
-    
-    *queue_stats = (QueueStats*)create_queue_stats();
-    *game_stats = (GameStats*)create_game_stats();
-    *ai_profile = (ProfileData*)start_profiling("Ghost AI Performance");
-    
-    if (!*queue_stats || !*game_stats || !*ai_profile) {
-        printf("[ERROR] Erro: Falha ao inicializar sistemas de estatisticas\n");
-        return 0;
-    }
-    
-    LOG_I("Todos os sistemas inicializados com sucesso");
-    return 1;
-}
-
-void cleanup_game_systems(QueueStats* queue_stats, 
-                         GameStats* game_stats, 
-                         ProfileData* ai_profile,
-                         Player* player) {
-    // Finalizar profiling
-    end_profiling(ai_profile);
-    logger_game_ended(player->score, 1);  // current level
-      // Imprimir estatísticas finais
-    printf("\n[STATS] RELATORIO DE PERFORMANCE:\n");
-    print_profile_result(ai_profile);
-    print_detailed_game_stats(game_stats);
-    
-    // Cleanup
-    destroy_queue_stats(queue_stats);
-    destroy_game_stats(game_stats);
-    destroy_profile_data(ai_profile);
-    logger_shutdown();
-}
-
-// Note: initialize_ghosts_safely movida para ghost.c

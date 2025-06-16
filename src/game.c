@@ -1,7 +1,10 @@
-#include "game.h"
-#include "logger.h"
 #include "config.h"
 #include "utils.h"
+#include "maze.h"
+#include "ghost.h"
+#include "player.h"
+#include "logger.h"
+#include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -105,109 +108,124 @@ void show_game_over_screen(Player* player, GameStatus game_status, int current_l
 
 // ===== FUNÇÕES DE LÓGICA DO JOGO =====
 
-void update_game(Ghost ghosts[], int ghost_count, Position *pacman_pos, bool *game_over, const char* maze) {
-    // Log player position
-    logger_log_player_action("moveu para", pacman_pos->x, pacman_pos->y);
+void update_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus* game_status, bool* game_over_flag, Position player_start_pos) {
+    (void)player_start_pos; // Marca como usado para evitar warning
+    
+    logger_log_player_action("moveu para", player->pos.x, player->pos.y);
 
-    // Move ghosts - Note: This function signature needs to be updated
-    // move_ghosts(ghosts, ghost_count, *pacman_pos, maze);
+    if (check_collision_with_pacman(player, ghosts, ghost_count, player->pos)) {
+        logger_collision_detected(player->pos.x, player->pos.y, ghosts[0].ghost_id);
+        *game_status = GAME_OVER;
+        *game_over_flag = true;
+    }
 
-    // Check collision
-    if (check_collision_with_pacman(ghosts, ghost_count, *pacman_pos)) {
-        logger_collision_detected(pacman_pos->x, pacman_pos->y, ghosts[0].ghost_id);
-        *game_over = true;
+    if (maze_count_points(maze_data) == 0) {
+        *game_status = VICTORY;
+        *game_over_flag = true;
     }
 }
 
-// ===== FUNÇÕES DE LÓGICA DO JOGO =====
-
-// Note: draw_game foi movida para maze.c como maze_render_with_ghosts
-// para consolidar todas as funções de renderização em um lugar
-
-bool process_player_input(char input, Position* pacman_pos, const char* maze, GameStatus* status) {
-    Direction dir = NORTH;
-    bool moved = false;
+void draw_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus game_status) {
+    clear_screen();
     
-    // Corrigir mapeamento das teclas - usar as teclas definidas em config.h
-    switch (toupper(input)) {  // Converter para maiúscula
-        case 'W': dir = NORTH; moved = true; break;   // Cima
-        case 'S': dir = SOUTH; moved = true; break;   // Baixo
-        case 'A': dir = WEST; moved = true; break;    // Esquerda
-        case 'D': dir = EAST; moved = true; break;    // Direita
-        case 'P': toggle_pause(status); break;        // Pausar
-        case 'Q': 
-            *status = GAME_OVER;
-            LOG_I("Jogo encerrado pelo jogador");
-            break;
-        case 'd': 
-        case 's': 
-        case 'l':
-            handle_debug_command(input);
-            break;
-    }
-    
-    if (moved) {
-        Position new_pos = get_next_position(*pacman_pos, dir);
-        
-        // Verificar limites do maze usando as dimensões corretas
-        if (new_pos.x >= 0 && new_pos.x < MAX_MAP_WIDTH && 
-            new_pos.y >= 0 && new_pos.y < MAX_MAP_HEIGHT) {
-            
-            // Acessar o maze usando a estrutura 2D correta
-            char cell = '#'; // Default para parede
-            
-            // Tentar acessar o maze de forma segura
-            if (maze) {
-                // Se o maze é passado como string linear
-                int index = new_pos.y * MAX_MAP_WIDTH + new_pos.x;
-                if (index >= 0 && index < MAX_MAP_WIDTH * MAX_MAP_HEIGHT) {
-                    cell = maze[index];
+    printf("╔");
+    for (int i = 0; i < maze_data->width; i++) printf("═");
+    printf("╗\n");
+
+    for (int y = 0; y < maze_data->height; y++) {
+        printf("║");
+        for (int x = 0; x < maze_data->width; x++) {
+            Position current = {x, y};
+            char symbol = maze_data->grid[y][x];
+
+            bool is_ghost = false;
+            for (int i = 0; i < ghost_count; i++) {
+                if (positions_equal(ghosts[i].pos, current)) {
+                    int color = COLOR_RESET;
+                    switch (ghosts[i].symbol) {
+                        case SYMBOL_GHOST_RED:   color = COLOR_GHOST_RED; break;
+                        case SYMBOL_GHOST_GREEN: color = COLOR_GHOST_GREEN; break;
+                        case SYMBOL_GHOST_BLUE:  color = COLOR_GHOST_BLUE; break;
+                        case SYMBOL_GHOST_PINK:  color = COLOR_GHOST_PINK; break;
+                        default: color = COLOR_RESET;
+                    }
+                    printf("\x1b[%dm%c\x1b[0m", color, ghosts[i].symbol);
+                    is_ghost = true;
+                    break;
                 }
             }
-            
-            if (cell != '#') {  // Não é parede
-                logger_log_player_action("moveu para", new_pos.x, new_pos.y);
-                *pacman_pos = new_pos;
-                
-                // Check if dot collected
-                if (cell == '.') {
-                    logger_dot_collected(new_pos.x, new_pos.y, POINTS_PER_DOT);
-                } else if (cell == 'O') {
-                    logger_dot_collected(new_pos.x, new_pos.y, POINTS_PER_POWER_PELLET);
+
+            if (!is_ghost) {
+                if (positions_equal(player->pos, current)) {
+                    printf("\x1b[%dm%c\x1b[0m", COLOR_PLAYER, SYMBOL_PLAYER);
+                } else {
+                    switch (symbol) {
+                        case SYMBOL_WALL: printf("\x1b[%dm█\x1b[0m", COLOR_WALL); break;
+                        case SYMBOL_DOT: printf("\x1b[%dm·\x1b[0m", COLOR_DOT); break;
+                        case SYMBOL_POWER_PELLET: printf("\x1b[%dmO\x1b[0m", COLOR_DOT); break;
+                        default: printf("%c", SYMBOL_EMPTY_SPACE); break;
+                    }
                 }
-                
-                return true;
-            } else {
-                LOG_D("Movimento bloqueado - parede em: (%d,%d)", new_pos.x, new_pos.y);
             }
-        } else {
-            LOG_D("Movimento bloqueado - fora dos limites: (%d,%d)", new_pos.x, new_pos.y);
         }
+        printf("║\n");
     }
+
+    printf("╚");
+    for (int i = 0; i < maze_data->width; i++) printf("═");
+    printf("╝\n");
     
-    return false;
+    printf("Score: %d | Vidas: %d | Status: %s\n", 
+           player->score, player->lives, game_status_to_string(game_status));
+}
+
+// process_player_input lida com input do jogador e chama player_move.
+bool process_player_input(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus* game_status, char input_char) {
+    bool movement_attempted = false;
+    
+    switch (toupper(input_char)) {
+        case KEY_UP:
+        case KEY_LEFT:
+        case KEY_DOWN:
+        case KEY_RIGHT:
+            player_move(player, maze_data, input_char, ghosts, ghost_count);
+            movement_attempted = true;
+            break;
+        case KEY_PAUSE:
+            toggle_pause(game_status);
+            break;
+        case KEY_QUIT:
+            *game_status = GAME_OVER;
+            LOG_I("Jogo encerrado pelo jogador.");
+            break;
+        // Mantendo teclas de debug como exemplo.
+        case 'G': // Changed from 'D' to 'G' for debuG
+        case 'L':
+            handle_debug_command(input_char);
+            break;
+    }
+    return movement_attempted;
 }
 
 void handle_debug_command(char input) {
     switch (tolower(input)) {
-        case 'd':
-            LOG_D("Comando de debug: Dump do estado do jogo");
-            logger_print_stats();
-            break;
-        case 's':
-            LOG_D("Comando de debug: Exibindo estatísticas");
-            logger_print_stats();
+        case 'g':
+            LOG_D("Comando de debug: Ghost info");
             break;
         case 'l':
-            LOG_D("Comando de debug: Alternando nível de log");
-            logger_set_level(LOG_DEBUG);
+            LOG_D("Comando de debug: Log Level");
             break;
     }
 }
 
 void toggle_pause(GameStatus* status) {
-    *status = (*status == PAUSED) ? PLAYING : PAUSED;
-    LOG_I("Estado do jogo alterado para: %s", *status == PAUSED ? "PAUSADO" : "JOGANDO");
+    if (*status == PLAYING) { // Apenas pausa se estiver jogando
+        *status = PAUSED;
+        LOG_I("Jogo PAUSADO.");
+    } else if (*status == PAUSED) { // Apenas retoma se estiver pausado
+        *status = PLAYING;
+        LOG_I("Jogo RETOMADO.");
+    }
 }
 
 void update_score(int* score, char maze_item) {
@@ -219,16 +237,10 @@ void update_score(int* score, char maze_item) {
         case SYMBOL_POWER_PELLET:
             points = POINTS_PER_POWER_PELLET;
             break;
-        case SYMBOL_GHOST_RED:
-        case SYMBOL_GHOST_BLUE:
-        case SYMBOL_GHOST_GREEN:
-        case SYMBOL_GHOST_PINK:
-            points = POINTS_FOR_EXTRA_LIFE;
-            break;
+        // A pontuação por comer fantasmas é tratada em check_collision_with_pacman.
     }
     
     if (points > 0) {
         *score += points;
-        LOG_D("Pontuação atualizada: %d (+%d pontos)", *score, points);
     }
 }

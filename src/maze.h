@@ -1,30 +1,32 @@
 #ifndef MAZE_H
 #define MAZE_H
 
-#include "utils.h"    // Para Position, Player, Ghost (forward declarations)
-#include "config.h"   // Para constantes
+#include <stdbool.h>
+#include "utils.h"
+#include "config.h"
 
-// Use apenas MAX_MAP_WIDTH/MAX_MAP_HEIGHT de config.h
-#define MAZE_WIDTH MAX_MAP_WIDTH
-#define MAZE_HEIGHT MAX_MAP_HEIGHT
-
-struct Maze {
+typedef struct {
     char grid[MAZE_HEIGHT][MAZE_WIDTH];
     int width;
     int height;
     int total_points;
-};
+    Position player_start_pos_from_map;
+} Maze;
 
-// Funções principais
-void maze_init(Maze* maze);
-void maze_render(const Maze* maze, Player* player);  
-void maze_render_with_ghosts(const Maze* maze, Player* player, Ghost* ghosts, int ghost_count);
+void maze_init(Maze* maze, int current_level, Position* out_player_start_pos, Position out_ghost_start_positions[MAX_GHOSTS], int* out_ghost_count);
+
+struct Player;
+struct Ghost;
+
+void maze_render(const Maze* maze, struct Player* player);
+void maze_render_with_ghosts(const Maze* maze, struct Player* player, struct Ghost* ghosts, int ghost_count);
+
 int maze_is_wall(const Maze* maze, Position pos);
 int maze_has_point(const Maze* maze, Position pos);
 void maze_remove_point(Maze* maze, Position pos);
 int maze_count_points(const Maze* maze);
 
-// Função utilitária para carregar o labirinto (stub)
-char* load_maze(int level);
+bool load_maze(Maze* maze, int level, Position* out_player_start_pos, Position out_ghost_start_positions[MAX_GHOSTS], int* out_ghost_count);
 
-#endif // MAZE_H
+#endif
+

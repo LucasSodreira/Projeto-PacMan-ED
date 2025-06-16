@@ -139,12 +139,15 @@ release: CFLAGS += -O2 -DNDEBUG
 release: clean all
 	@echo "🚀 Versão release compilada"
 
-# Profiling
-profile: CFLAGS += -pg -O2
-profile: clean all
-	@echo "📊 Versão profiling compilada"
-
-# ===== LIMPEZA =====
+# Verificar arquivos necessários - ATUALIZADO
+check:
+	@echo "Verificando arquivos fonte..."
+	@echo "Implementados:"
+	@for file in $(ALL_SOURCES); do \
+		if [ -f $$file ]; then echo "  ✓ $$file"; else echo "  ✗ $$file (faltando)"; fi; \
+	done
+	@echo ""
+	@echo "Todos os módulos principais do jogo estão incluídos em ALL_SOURCES."
 
 clean:
 	@echo "🧹 Limpando arquivos..."
@@ -167,16 +170,24 @@ distclean: clean
 # ===== INFORMAÇÕES =====
 
 info:
-	@echo "╔════════════════════════════════════╗"
-	@echo "║       INFORMAÇÕES DO PROJETO       ║"
-	@echo "╚════════════════════════════════════╝"
-	@echo "📦 Projeto: Pac-Man Terminal"
-	@echo "🔧 Compilador: $(CC)"
-	@echo "⚙️  Flags: $(CFLAGS)"
-	@echo "💻 Sistema: $(if $(OS),$(OS),Unix-like)"
-	@echo "📁 Diretórios: src/, test/, obj/, bin/"
-	@echo "🎯 Executáveis: $(words $(ALL_SOURCES)) módulos"
-	@echo "✅ Status: 100% implementado"
+	@echo "=== Informações do Projeto ==="
+	@echo "Projeto: Pac-Man Terminal"
+	@echo "Compilador: $(CC)"
+	@echo "Flags: $(CFLAGS)"
+	@echo "Sistema: $(if $(OS),$(OS),Unix-like)"
+	@echo ""
+	@echo "Módulos implementados:"
+	@echo "  ✓ Queue (FIFO)"
+	@echo "  ✓ Utils (funções auxiliares)"
+	@echo "  ✓ Logger (sistema de logging)"
+	@echo "  ✓ Stats (estatísticas)"
+	@echo "  ✓ Player (lógica do jogador)"
+	@echo "  ✓ Maze (renderização de mapas)"
+	@echo "  ✓ Ghost (IA dos fantasmas e estados)"
+	@echo "  ✓ Game (lógica do jogo, atualização e desenho)"
+	@echo "  ✓ Main (loop principal e integração)"
+	@echo ""
+	@echo "Todos os módulos principais foram implementados e refatorados."
 
 status:
 	@echo "📊 STATUS DOS MÓDULOS:"

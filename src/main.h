@@ -12,4 +12,4 @@
 
 void game_loop();
 
-#endif // MAIN_H
+#endif

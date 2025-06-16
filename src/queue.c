@@ -18,13 +18,20 @@ Queue* create_queue() {
 }
 
 // Adicionar fantasma no final da fila
-void enqueue(Queue* queue, Ghost ghost) {
-    if (!queue) return;
+// Retorna true em sucesso, false em falha (ex: falha de alocação)
+bool enqueue(Queue* queue, Ghost ghost) {
+    if (!queue) {
+        // Idealmente, logar ou tratar erro de forma mais robusta se queue for NULL.
+        // Mas, para esta função, se queue é NULL, não podemos enfileirar.
+        return false;
+    }
     
     QueueNode* new_node = (QueueNode*)malloc(sizeof(QueueNode));
     if (!new_node) {
-        printf("Erro: Não foi possível alocar memória para novo nó\n");
-        return;
+        printf("Erro Crítico: Falha ao alocar memória para novo nó da fila.\n");
+        // Em um jogo real, isso poderia exigir tratamento mais drástico,
+        // como tentar liberar memória ou encerrar de forma controlada.
+        return false; // Sinaliza falha
     }
     
     new_node->ghost = ghost;
@@ -39,6 +46,7 @@ void enqueue(Queue* queue, Ghost ghost) {
     }
     
     queue->size++;
+    return true; // Sucesso
 }
 
 // Remover fantasma do início da fila
@@ -208,11 +216,20 @@ Queue* clone_queue(Queue* source) {
     if (!source) return NULL;
     
     Queue* new_queue = create_queue();
-    if (!new_queue) return NULL;
+    if (!new_queue) {
+        // LOG_E ou printf("Falha ao criar fila para clone.");
+        return NULL;
+    }
     
     QueueNode* current = source->front;
     while (current) {
-        enqueue(new_queue, current->ghost);
+        if (!enqueue(new_queue, current->ghost)) {
+            // LOG_E ou printf("Falha ao enfileirar elemento durante clone_queue na posição do fantasma ID %d.", current->ghost.ghost_id);
+            // Se enqueue falhar, a fila clonada estará incompleta.
+            // Poderia destruir new_queue e retornar NULL, ou retornar a cópia parcial.
+            // Por simplicidade, continua e retorna a cópia parcial, mas loga o erro idealmente.
+            // Para esta tarefa, apenas logamos um aviso (implícito, pois enqueue já imprime).
+        }
         current = current->next;
     }
     

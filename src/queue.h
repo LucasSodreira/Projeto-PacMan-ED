@@ -19,7 +19,7 @@ typedef struct {
 
 // Declarações das funções existentes
 Queue* create_queue();
-void enqueue(Queue* queue, Ghost ghost);
+bool enqueue(Queue* queue, Ghost ghost); // Retorna bool para indicar sucesso/falha
 Ghost dequeue(Queue* queue);
 int is_empty(Queue* queue);
 void destroy_queue(Queue* queue);

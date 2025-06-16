@@ -144,10 +144,7 @@ check:
 		if [ -f $$file ]; then echo "  ✓ $$file"; else echo "  ✗ $$file (faltando)"; fi; \
 	done
 	@echo ""
-	@echo "Pendentes para jogo completo:"
-	@echo "  ✗ $(SRCDIR)/ghost.c"
-	@echo "  ✗ $(SRCDIR)/game.c" 
-	@echo "  ✗ $(SRCDIR)/main.c"
+	@echo "Todos os módulos principais do jogo estão incluídos em ALL_SOURCES."
 
 # Limpar arquivos compilados - CORRIGIDO
 clean:
@@ -180,11 +177,11 @@ info:
 	@echo "  ✓ Stats (estatísticas)"
 	@echo "  ✓ Player (lógica do jogador)"
 	@echo "  ✓ Maze (renderização de mapas)"
+	@echo "  ✓ Ghost (IA dos fantasmas e estados)"
+	@echo "  ✓ Game (lógica do jogo, atualização e desenho)"
+	@echo "  ✓ Main (loop principal e integração)"
 	@echo ""
-	@echo "Pendentes:"
-	@echo "  ⏳ Ghost (IA dos fantasmas)"
-	@echo "  ⏳ Game (loop principal)"
-	@echo "  ⏳ Main (integração final)"
+	@echo "Todos os módulos principais foram implementados e refatorados."
 
 # Verificar estilo de código (básico)
 check-style:

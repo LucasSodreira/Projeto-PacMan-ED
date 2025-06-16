@@ -1,204 +1,231 @@
 #include "ghost.h"
-#include "utils.h"
-#include "config.h"
-#include <stdlib.h>
-#include <string.h>
+#include "utils.h"   // Para Position, Direction, manhattan_distance, get_opposite_direction, etc.
+#include "config.h"  // Para MAX_GHOSTS, GHOST_SYMBOLS, SCATTER_TARGETS, SYMBOL_WALL, POINTS_PER_GHOST_EATEN
+#include "player.h"  // Para Player struct (necessário para player->score)
+#include "logger.h"  // Para LOG_I, LOG_D
+#include <stdlib.h>  // Para rand()
+// #include <string.h> // Removido pois não está sendo usado
 
-static const char GHOST_SYMBOLS[MAX_GHOSTS] = {'F', 'G', 'B', 'R'}; // Red, Green, Blue, Pink
-static const Position SCATTER_TARGETS[MAX_GHOSTS] = {{2,2}, {2,27}, {27,2}, {27,27}}; // Corner positions
+// Define símbolos e posições de scatter default.
+static const char GHOST_SYMBOLS[MAX_GHOSTS] = {SYMBOL_GHOST_RED, SYMBOL_GHOST_GREEN, SYMBOL_GHOST_BLUE, SYMBOL_GHOST_PINK};
+// SCATTER_TARGETS são as posições dos cantos para o modo scatter.
+// Ajustar estas posições para ficarem dentro dos limites de MAX_MAP_WIDTH e MAX_MAP_HEIGHT de config.h
+static const Position SCATTER_TARGETS[MAX_GHOSTS] = {
+    {1, 1},                           // Canto superior esquerdo (exemplo)
+    {MAX_MAP_WIDTH - 2, 1},           // Canto superior direito (exemplo)
+    {1, MAX_MAP_HEIGHT - 2},          // Canto inferior esquerdo (exemplo)
+    {MAX_MAP_WIDTH - 2, MAX_MAP_HEIGHT - 2} // Canto inferior direito (exemplo)
+};
 
 void init_ghosts(Ghost ghosts[], int count) {
     for (int i = 0; i < count; i++) {
         ghosts[i].ghost_id = i;
         ghosts[i].symbol = GHOST_SYMBOLS[i % MAX_GHOSTS];
         ghosts[i].state = GHOST_NORMAL;
-        ghosts[i].is_active = 1;
-        ghosts[i].difficulty = DIFFICULTY_MEDIUM;
-        ghosts[i].scatter_mode = 1;
+        ghosts[i].is_active = false; // Começam inativos; main.c ativa os do mapa.
+        ghosts[i].difficulty = DIFFICULTY_MEDIUM; // Dificuldade padrão
+        ghosts[i].scatter_mode = true; // Começam em modo scatter
         ghosts[i].timer = 0;
         ghosts[i].path_start = 0;
         ghosts[i].path_end = 0;
         
-        // Posições iniciais mais seguras e visíveis
-        ghosts[i].pos.x = 5 + (i * 4);
-        ghosts[i].pos.y = 5 + (i % 2);
-        ghosts[i].direction = NORTH;
+        // Posições iniciais e initial_pos são definidas em main.c ao carregar o mapa.
+        // Define uma posição inicial segura padrão para initial_pos caso não seja sobrescrita.
+        ghosts[i].pos = (Position){1,1};
+        ghosts[i].initial_pos = ghosts[i].pos; // Garante que initial_pos tenha um valor padrão
+        ghosts[i].direction = NORTH; // Direção inicial padrão
         
-        ghosts[i].target = SCATTER_TARGETS[i % MAX_GHOSTS];
+        ghosts[i].target = SCATTER_TARGETS[i % MAX_GHOSTS]; // Alvo inicial para scatter
         
-        LOG_I("Fantasma %d (%c) criado na posição (%d,%d)", 
-              i, ghosts[i].symbol, ghosts[i].pos.x, ghosts[i].pos.y);
+        // O Log de criação efetiva com posição é feito em main.c após carregar do mapa.
+        // LOG_I("Fantasma %d (%c) template criado.", i, ghosts[i].symbol);
     }
 }
 
-Direction calculate_next_direction(const Ghost* ghost, const Position pacman_pos, const char* maze) {
+// Esta é a versão que usa Maze* (anteriormente calculate_next_direction_maze)
+// A versão antiga que usava const char* maze foi removida.
+Direction calculate_next_direction(const Ghost* ghost, Position pacman_pos, const Maze* maze_data) {
+    if (!maze_data) {
+        LOG_E("calculate_next_direction chamado com maze_data NULL para ghost %d", ghost->ghost_id);
+        return ghost->direction; // Retorna a direção atual como fallback seguro
+    }
+    if (!ghost) {
+        LOG_E("calculate_next_direction chamado com ghost NULL");
+        return DIR_INVALID; // Ou alguma direção padrão/inválida
+    }
+
     Direction best_dir = ghost->direction;
-    int min_distance = 1000000;
-    Position target = calculate_target_position(ghost, pacman_pos);
+    long min_distance = -1; // Usar long e -1 para indicar que nenhuma direção válida foi encontrada ainda.
+
+    Position target = calculate_target_position(ghost, pacman_pos); // Alvo depende do estado do fantasma
     
-    // Check each possible direction
-    for (Direction dir = NORTH; dir <= WEST; dir++) {
+    for (Direction dir = NORTH; dir <= WEST; dir++) { // Itera sobre todas as direções válidas
+        if (!is_valid_direction(dir)) continue;
+
         Position next_pos = get_next_position(ghost->pos, dir);
         
-        // Skip if move is invalid or opposite to current direction (no 180° turns)
-        if (!is_valid_move_ghost(next_pos, maze) || 
-            (dir == get_opposite_direction(ghost->direction) && ghost->state != GHOST_FRIGHTENED)) {
+        // Fantasmas comidos podem ignorar a regra de inversão de 180 graus para voltar para casa.
+        bool allow_reverse = (ghost->state == GHOST_EATEN || ghost->state == GHOST_FRIGHTENED);
+        if (!is_valid_move_ghost(next_pos, maze_data) ||
+            (!allow_reverse && dir == get_opposite_direction(ghost->direction))) {
             continue;
         }
         
-        int distance = manhattan_distance(next_pos, target);
-        
-        // For frightened mode, use random movement with some intelligence
+        long distance; // Usar long para consistência com min_distance
         if (ghost->state == GHOST_FRIGHTENED) {
-            distance = rand() % 100 + manhattan_distance(next_pos, pacman_pos);
+            // Tenta se afastar do Pacman (maximizar distância)
+            distance = -manhattan_distance(next_pos, pacman_pos);
+            distance += (rand() % 50) - 25; // Adiciona aleatoriedade
+        } else {
+            // Persegue o alvo (que pode ser pacman_pos, scatter_target, ou initial_pos para GHOST_EATEN)
+            distance = manhattan_distance(next_pos, target);
         }
         
-        // Update best direction if this is better
-        if (distance < min_distance) {
+        if (min_distance == -1 || distance < min_distance) {
             min_distance = distance;
             best_dir = dir;
         }
     }
     
-    return best_dir;
-}
-
-// Nova função que trabalha com estrutura Maze
-Direction calculate_next_direction_maze(const Ghost* ghost, const Position pacman_pos, const Maze* maze) {
-    Direction best_dir = ghost->direction;
-    int min_distance = 1000000;
-    Position target = calculate_target_position(ghost, pacman_pos);
-    
-    // Check each possible direction
-    for (Direction dir = NORTH; dir <= WEST; dir++) {
-        Position next_pos = get_next_position(ghost->pos, dir);
-        
-        // Skip if move is invalid or opposite to current direction (no 180° turns)
-        if (!is_valid_move_ghost_maze(next_pos, maze) || 
-            (dir == get_opposite_direction(ghost->direction) && ghost->state != GHOST_FRIGHTENED)) {
-            continue;
+    if (min_distance == -1) { // Se nenhuma direção válida foi encontrada
+        Position next_pos_current_dir = get_next_position(ghost->pos, ghost->direction);
+        if (is_valid_move_ghost(next_pos_current_dir, maze_data)) {
+            return ghost->direction; // Mantém direção atual se válida
         }
-        
-        int distance = manhattan_distance(next_pos, target);
-        
-        // For frightened mode, use random movement with some intelligence
-        if (ghost->state == GHOST_FRIGHTENED) {
-            distance = rand() % 100 + manhattan_distance(next_pos, pacman_pos);
-        }
-        
-        // Update best direction if this is better
-        if (distance < min_distance) {
-            min_distance = distance;
-            best_dir = dir;
-        }
+        return DIR_INVALID; // Indica que não pode se mover
     }
-    
     return best_dir;
 }
 
 Position calculate_target_position(const Ghost* ghost, const Position pacman_pos) {
-    // In scatter mode, target corner
+    // Se estiver comido, o alvo é a sua posição inicial (casa dos fantasmas)
+    if (ghost->state == GHOST_EATEN) {
+        return ghost->initial_pos;
+    }
+    // Se assustado, o "alvo" é irrelevante para perseguição direta,
+    // pois a lógica de movimento em calculate_next_direction é de fuga.
+    // Retornar pacman_pos aqui é um placeholder.
+    if (ghost->state == GHOST_FRIGHTENED) {
+        return pacman_pos;
+    }
+
+    // Em modo scatter (e não assustado/comido), o alvo é o canto designado.
     if (ghost->scatter_mode) {
         return SCATTER_TARGETS[ghost->ghost_id % MAX_GHOSTS];
     }
     
-    // In normal mode, behavior depends on ghost type and difficulty
+    // Em modo de perseguição (CHASE)
     Position target = pacman_pos;
     
     switch (ghost->ghost_id % MAX_GHOSTS) {
-        case 0: // Red ghost - direct chase
-            // Target gets more accurate with higher difficulty
-            if (ghost->difficulty == DIFFICULTY_EASY) {
+        case 0: // Red ghost (Blinky) - Perseguidor direto
+            if (ghost->difficulty == DIFFICULTY_EASY) { // Menos preciso se fácil
                 target.x += (rand() % 5) - 2;
                 target.y += (rand() % 5) - 2;
             }
+            // Em HARD ou MEDIUM, persegue diretamente (target = pacman_pos já definido)
             break;
             
-        case 1: // Green ghost - predict ahead
-            for (int i = 0; i < (4 - ghost->difficulty); i++) {
-                target = get_next_position(target, NORTH);
+        case 1: // Green ghost (substituindo Pinky) - Perseguidor com variabilidade
+            if (ghost->difficulty == DIFFICULTY_HARD) {
+                target = pacman_pos; // Persegue diretamente
+            } else if (ghost->difficulty == DIFFICULTY_MEDIUM) {
+                target.x = pacman_pos.x + (rand() % 5) - 2;
+                target.y = pacman_pos.y + (rand() % 5) - 2;
+            } else { // DIFFICULTY_EASY
+                target.x = pacman_pos.x + (rand() % 9) - 4;
+                target.y = pacman_pos.y + (rand() % 9) - 4;
             }
             break;
             
-        case 2: // Blue ghost - flank
-            target.x = pacman_pos.x + (ghost->pos.x - pacman_pos.x) / 2;
-            target.y = pacman_pos.y + (ghost->pos.y - pacman_pos.y) / 2;
+        case 2: // Blue ghost (Inky) - Lógica de flanco simplificada ou perseguição
+             if (ghost->difficulty == DIFFICULTY_EASY) {
+                target = SCATTER_TARGETS[ghost->ghost_id % MAX_GHOSTS]; // Vai para o canto se fácil
+            } else { // Senão, persegue diretamente (lógica de flanco mais complexa removida para simplificar)
+                target = pacman_pos;
+            }
             break;
             
-        case 3: // Pink ghost - random movement when far, direct chase when close
-            if (manhattan_distance(ghost->pos, pacman_pos) > 8) {
+        case 3: // Pink/Orange ghost (Clyde) - Persegue se perto, scatter se longe
+            if (manhattan_distance(ghost->pos, pacman_pos) > 8) { // Se longe
                 target = SCATTER_TARGETS[ghost->ghost_id % MAX_GHOSTS];
             }
+            // Se perto, persegue diretamente (target = pacman_pos já definido)
             break;
     }
-    
     return target;
 }
 
-void move_ghosts(Ghost ghosts[], int count, const Position pacman_pos, const GameState* game_state) {
+/*
+// A função move_ghosts foi substituída pela lógica de Fila em main.c
+void move_ghosts(Ghost ghosts[], int count, Position pacman_pos, const Maze* maze_data) {
     for (int i = 0; i < count; i++) {
-        if (!ghosts[i].is_active) continue;
+        if (!ghosts[i].is_active && ghosts[i].state != GHOST_EATEN) {
+            continue;
+        }
         
-        // Update ghost state
-        update_ghost_state(&ghosts[i], ghosts[i].timer++);
+        ghosts[i].timer++;
+        update_ghost_state(&ghosts[i], ghosts[i].timer);
         
-        // Calculate new direction based on AI
-        Direction new_dir = calculate_next_direction(&ghosts[i], pacman_pos, (char*)game_state->map);
-        ghosts[i].direction = new_dir;
-        
-        // Move ghost
-        Position new_pos = get_next_position(ghosts[i].pos, new_dir);
-        if (is_valid_move_ghost(new_pos, (char*)game_state->map)) {
-            ghosts[i].pos = new_pos;
+        if (ghosts[i].is_active || ghosts[i].state == GHOST_EATEN) {
+            Direction new_dir = calculate_next_direction(&ghosts[i], pacman_pos, maze_data);
+
+            if (new_dir != DIR_INVALID) {
+                ghosts[i].direction = new_dir;
+                Position new_pos = get_next_position(ghosts[i].pos, new_dir);
+
+                if (is_valid_move_ghost(new_pos, maze_data)) {
+                    ghosts[i].pos = new_pos;
+
+                    if (ghosts[i].state == GHOST_EATEN && positions_equal(ghosts[i].pos, ghosts[i].initial_pos)) {
+                        LOG_I("Fantasma %d (%c) chegou à base e foi reativado.", ghosts[i].ghost_id, ghosts[i].symbol);
+                        reset_ghost(&ghosts[i]);
+                    }
+                }
+            }
         }
     }
 }
+*/
 
-bool is_valid_move_ghost(Position pos, const char* maze) {
-    // Check maze boundaries
-    if (pos.x < 0 || pos.x >= MAX_MAP_WIDTH || pos.y < 0 || pos.y >= MAX_MAP_HEIGHT) {
-        return false;
+// Esta é a versão que usa Maze* (anteriormente is_valid_move_ghost_maze)
+// A versão antiga que usava const char* maze foi removida.
+bool is_valid_move_ghost(Position pos, const Maze* maze_data) {
+    if (!maze_data) return false;
+    if (pos.x < 0 || pos.x >= maze_data->width || pos.y < 0 || pos.y >= maze_data->height) {
+        return false; // Fora dos limites
     }
-    
-    // Se maze é NULL, assumir que movimento é válido (para debug)
-    if (!maze) {
-        return true;
-    }
-    
-    // Acessar maze como estrutura 2D
-    // O maze é passado como ponteiro linear, então convertemos as coordenadas
-    int index = pos.y * MAX_MAP_WIDTH + pos.x;
-    if (index >= 0 && index < MAX_MAP_WIDTH * MAX_MAP_HEIGHT) {
-        return maze[index] != '#';
-    }
-    
-    return false;
+    // Fantasmas podem atravessar "portas de fantasmas" se existirem, mas não paredes.
+    // Para esta implementação, eles não atravessam nada que não seja espaço vazio.
+    return maze_data->grid[pos.y][pos.x] != SYMBOL_WALL;
 }
 
-// Função alternativa que aceita estrutura Maze diretamente
-bool is_valid_move_ghost_maze(Position pos, const Maze* maze) {
-    if (!maze) return false;
-    
-    // Check maze boundaries
-    if (pos.x < 0 || pos.x >= maze->width || pos.y < 0 || pos.y >= maze->height) {
-        return false;
+void update_ghost_state(Ghost* ghost, int timer_value) { // Renomeado current_time para timer_value para clareza
+    // Lógica de Scatter/Chase
+    if (ghost->state == GHOST_NORMAL || ghost->state == GHOST_FRIGHTENED) {
+        // A cada SCATTER_CHASE_INTERVAL ticks, alterna o modo.
+        if (ghost->timer % SCATTER_CHASE_INTERVAL == 0 && ghost->timer > 0) { // ghost->timer > 0 para não alternar no tick 0
+            ghost->scatter_mode = !ghost->scatter_mode;
+            LOG_D("Fantasma %d (%c) modo: %s.", ghost->ghost_id, ghost->symbol, ghost->scatter_mode ? "SCATTER" : "CHASE");
+        }
     }
-    
-    return maze->grid[pos.y][pos.x] != '#';
-}
 
-void update_ghost_state(Ghost* ghost, int current_time) {
-    // Switch between scatter and chase modes periodically
-    if (current_time % 600 == 0) { // Switch every 20 seconds (assuming 30 FPS)
-        ghost->scatter_mode = !ghost->scatter_mode;
-    }
-    
-    // Update frightened state
     if (ghost->state == GHOST_FRIGHTENED) {
-        if (ghost->timer > 300) { // 10 seconds of frightened mode
+        if (ghost->timer > FRIGHTENED_MODE_DURATION) {
             ghost->state = GHOST_NORMAL;
             ghost->timer = 0;
+            LOG_D("Fantasma %d (%c) não está mais FRIGHTENED.", ghost->ghost_id, ghost->symbol);
         }
+    } else if (ghost->state == GHOST_EATEN) {
+        // A reativação de GHOST_EATEN (voltar ao normal) agora acontece em move_ghosts
+        // quando o fantasma chega à sua initial_pos.
+        // GHOST_EATEN_DURATION pode ser usado para um tempo máximo de retorno,
+        // ou para fazê-lo piscar antes de se tornar perigoso novamente na base, mas não implementado aqui.
+        // Se desejar um tempo máximo para estar no estado EATEN:
+        // if (ghost->timer > GHOST_EATEN_DURATION) {
+        //    LOG_W("Fantasma %d (%c) demorou demais para voltar, resetando à força.", ghost->ghost_id, ghost->symbol);
+        //    reset_ghost(ghost);
+        // }
     }
 }
 
@@ -208,31 +235,43 @@ void set_ghost_difficulty(Ghost* ghost, DifficultyLevel difficulty) {
 
 void reset_ghost(Ghost* ghost) {
     ghost->state = GHOST_NORMAL;
-    ghost->scatter_mode = 1;
+    ghost->scatter_mode = true; // Padrão para scatter ao resetar
     ghost->timer = 0;
-    ghost->is_active = 1;
+    ghost->is_active = true; // Torna o fantasma ativo ao resetar
     ghost->path_start = 0;
     ghost->path_end = 0;
-    
-    // Reset to initial position
-    ghost->pos.x = 14 + (ghost->ghost_id % 2);
-    ghost->pos.y = 14 + (ghost->ghost_id / 2);
-    ghost->direction = NORTH;
+    ghost->pos = ghost->initial_pos; // Reseta para sua posição inicial específica
+    ghost->direction = NORTH;        // Direção padrão ao resetar
+    LOG_D("Fantasma %d (%c) resetado para pos (%d,%d), estado NORMAL.", ghost->ghost_id, ghost->symbol, ghost->pos.x, ghost->pos.y);
 }
 
-bool check_collision_with_pacman(Ghost ghosts[], int count, Position pacman_pos) {
+// Assinatura atualizada para incluir Player* player
+bool check_collision_with_pacman(Player* player, Ghost ghosts[], int count, Position pacman_pos) {
     for (int i = 0; i < count; i++) {
-        if (!ghosts[i].is_active) continue;
-        
+        // Só considera colisão com fantasmas ativos e não comidos.
+        // Fantasmas no estado GHOST_EATEN (is_active=false) não causam colisão.
+        if (!ghosts[i].is_active || ghosts[i].state == GHOST_EATEN) continue;
+
         if (positions_equal(ghosts[i].pos, pacman_pos)) {
-            // If ghost is frightened, it gets eaten instead
             if (ghosts[i].state == GHOST_FRIGHTENED) {
                 ghosts[i].state = GHOST_EATEN;
-                ghosts[i].is_active = 0;
-                return false;
+                ghosts[i].is_active = false; // Fica inativo até chegar na base e ser resetado
+                ghosts[i].timer = 0;
+
+                if (player) {
+                    player->score += POINTS_PER_GHOST_EATEN; // POINTS_PER_GHOST_EATEN de config.h
+                    LOG_I("Fantasma %d (%c) comido! +%d pontos. Score: %d",
+                          ghosts[i].ghost_id, ghosts[i].symbol, POINTS_PER_GHOST_EATEN, player->score);
+                } else {
+                    LOG_W("Player é NULL em check_collision_with_pacman ao dar score.");
+                }
+                return false; // Não é colisão fatal
             }
-            return true;
+            // Colisão com fantasma normal ou scatter
+            LOG_I("Colisão fatal! Pacman (%d,%d) vs Fantasma %d (%c) (%d,%d)",
+                  pacman_pos.x, pacman_pos.y, ghosts[i].ghost_id, ghosts[i].symbol, ghosts[i].pos.x, ghosts[i].pos.y);
+            return true; // Colisão fatal
         }
     }
-    return false;
+    return false; // Sem colisão
 }

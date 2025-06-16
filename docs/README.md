@@ -1,228 +1,94 @@
-# 🎮 Projeto Pac-Man - Estruturas de Dados
+# 🎮 Projeto Pac-Man em C para Terminal
 
 ## 📋 Descrição do Projeto
 
-Este projeto consiste na implementação de um jogo **Pac-Man** em **C** para terminal, desenvolvido como trabalho da disciplina de Estruturas de Dados. O jogo implementa conceitos fundamentais como **filas (FIFO)**, **estruturas de dados**, **algoritmos de IA**, **sistemas de logging avançados** e muito mais.
+Este projeto é uma implementação do clássico jogo Pac-Man, desenvolvido em linguagem C para ser executado no terminal. O desenvolvimento focou na aplicação de conceitos de estruturas de dados, incluindo o uso de uma **Fila (FIFO)** para o gerenciamento e movimentação dos fantasmas, um requisito chave do projeto. O jogo passou por refatorações significativas para melhorar a organização do código, a lógica de jogo e a robustez.
 
-**🎉 STATUS: PROJETO CONCLUÍDO E 100% FUNCIONAL! 🎉**
+**Status:** Projeto funcional com mecânicas principais implementadas.
 
-## 🎯 Objetivos
+## 🎯 Objetivos Originais (Exemplos)
 
-- ✅ Aplicar conceitos de **Estruturas de Dados** em um projeto prático
-- ✅ Implementar **fila (FIFO)** para controle de fantasmas
-- ✅ Desenvolver um jogo funcional em **terminal/console** 
-- ✅ Trabalhar em equipe com **divisão de responsabilidades**
-- ✅ Praticar **programação em C** e **gerenciamento de memória**
-- ✅ Implementar **IA avançada** para fantasmas
-- ✅ Criar **sistemas profissionais** de logging e debugging
+- Aplicar conceitos de Estruturas de Dados em um projeto prático.
+- Implementar Fila (FIFO) para controle de entidades (fantasmas).
+- Desenvolver um jogo funcional em terminal/console.
+- Praticar programação em C e gerenciamento de memória.
+- Implementar IA básica para os fantasmas.
 
 ## 🕹️ Como Jogar
 
 ### Compilação e Execução
+
+Recomenda-se compilar usando o Makefile fornecido:
 ```bash
-# Compilar o jogo
+# Compilar e executar o jogo (opção preferida)
 make run-game
 
-# Ou manualmente
+# Alternativamente, para compilar tudo (incluindo possíveis testes):
 make all
+# E então executar:
 ./bin/pacman
 ```
+(No Windows, o executável pode estar em `bin\pacman.exe`)
 
 ### Controles do Jogo
-- **W** - Mover para cima ⬆️
-- **S** - Mover para baixo ⬇️  
-- **A** - Mover para esquerda ⬅️
-- **D** - Mover para direita ➡️
-- **P** - Pausar/Retomar ⏸️
+- **W** ou **Seta para Cima** - Mover para cima ⬆️
+- **S** ou **Seta para Baixo** - Mover para baixo ⬇️
+- **A** ou **Seta para Esquerda** - Mover para esquerda ⬅️
+- **D** ou **Seta para Direita** - Mover para direita ➡️
+- **P** - Pausar/Retomar o jogo ⏸️
 - **Q** - Sair do jogo 🚪
 
+(Nota: As teclas de seta podem depender da configuração do terminal. WASD são os controles primários.)
+
 ### Objetivo
-🎯 **Colete todos os pontos (.) sem ser tocado pelos fantasmas coloridos!**
+O objetivo é controlar o Pac-Man para coletar todos os pontos (`.`) e power pellets (`O`) em cada nível, evitando ser capturado pelos fantasmas. Comer um power pellet deixa os fantasmas temporariamente vulneráveis, permitindo que o Pac-Man os coma para ganhar pontos extras.
 
-## 🔧 Como Compilar e Executar
+## ✨ Funcionalidades Implementadas
 
-### Pré-requisitos
-- Compilador GCC
-- Make
-- Terminal com suporte a cores ANSI
-- Sistema Windows/Linux/macOS
+- Jogo Pac-Man jogável em interface de terminal.
+- Movimentação do jogador controlada pelo usuário (WASD).
+- Coleta de pontos e power pellets, com atualização de score em tempo real.
+- Múltiplos níveis carregados a partir de arquivos de mapa (localizados na pasta `maps/`).
+- Fantasmas com movimentação gerenciada por uma Fila (FIFO), processando um fantasma por ciclo de jogo para permitir diferentes velocidades relativas.
+- Inteligência Artificial (IA) para os fantasmas com diferentes comportamentos:
+    - Perseguição direta ao Pac-Man.
+    - Comportamento de "scatter" para dispersar pelos cantos do mapa.
+    - Estado "Frightened" (assustado) após o Pac-Man consumir um power pellet, durante o qual podem ser comidos.
+    - Estado "Eaten" (comido), no qual o fantasma retorna à sua base para ser reativado.
+- Sistema de pontuação, incluindo pontos por coleta de itens e por comer fantasmas assustados.
+- Sistema de vidas para o jogador, com tela de "Game Over" ao esgotarem.
+- Condição de vitória ao limpar todos os pontos de um nível, com progressão para o próximo nível.
+- Funcionalidade de pausar (`P`) e sair (`Q`) do jogo a qualquer momento.
+- Interface de terminal com uso de cores ANSI para distinguir elementos do jogo (jogador, fantasmas, paredes, pontos).
+- Logging básico de eventos importantes do jogo e erros em um arquivo (`game.log`), configurável através de `logger.c/h`.
 
-### Compilação Rápida ⚡
-```bash
-# Método mais rápido - jogo pronto para jogar
-make run-game
-```
+## 🛠️ Estrutura do Projeto (Principais Módulos)
 
-### Compilação Completa 🔨
-```bash
-# Compilar tudo (testes + jogo)
-make all
+O projeto é organizado nos seguintes módulos principais:
+- `main.c`: Contém o loop principal do jogo (`game_loop`) e a função `main`, gerenciando a inicialização geral e a progressão de níveis.
+- `game.c/h`: Orquestra as funcionalidades centrais do jogo, como atualização do estado do jogo (`update_game`), processamento de input (`process_player_input`), e renderização da tela (`draw_game`).
+- `player.c/h`: Define a estrutura `Player` e gerencia a lógica relacionada ao jogador, incluindo movimento (`player_move`), inicialização (`player_init`), e gerenciamento de vidas (`player_lose_life`).
+- `ghost.c/h`: Define a estrutura `Ghost` e implementa a IA dos fantasmas, incluindo cálculo de direção (`calculate_next_direction`), definição de alvos (`calculate_target_position`), e gerenciamento de estados (`update_ghost_state`, `reset_ghost`).
+- `maze.c/h`: Define a estrutura `Maze` e lida com o carregamento de mapas de arquivos (`load_maze`), inicialização do labirinto (`maze_init`), e verificação de colisões com paredes ou coleta de pontos.
+- `queue.c/h`: Implementação da estrutura de dados Fila genérica, utilizada para gerenciar a ordem de movimento dos fantasmas.
+- `utils.c/h`: Fornece funções utilitárias diversas, como manipulação de posições e direções, conversão de status para string, e outras ferramentas auxiliares.
+- `config.h`: Arquivo central de configuração, contendo constantes globais como símbolos do jogo, cores, pontuações, configurações de dificuldade (se aplicável), e parâmetros de jogabilidade.
+- `logger.c/h`: Sistema de logging simples para registrar mensagens de debug, informação, avisos e erros em um arquivo.
+- `stats.c/h`: Estruturas e funções relacionadas a estatísticas de jogo e profiling de performance (uso atual pode variar).
 
-# Executar jogo
-./bin/pacman         # Linux/macOS
-bin\pacman.exe       # Windows
+## 🧪 Testes
 
-# Executar testes
-make test            # Todos os testes
-make test-player     # Teste específico
-```
+O projeto original incluía uma pasta `test` com arquivos como `test_structs.c`, indicando uma estrutura para testes unitários e de integração. Durante as fases de desenvolvimento e refatoração, foram realizados testes manuais e revisões de código para assegurar as funcionalidades principais. Para garantir maior robustez e cobertura, a suíte de testes pode ser expandida e atualizada para refletir o estado atual do código.
 
-### Opções de Compilação 🛠️
-```bash
-# Compilação com debug ativo
-make debug run-game
+## 📝 Convenções de Código e Ferramentas
 
-# Compilação otimizada
-make release
-
-# Limpar e recompilar
-make clean && make run-game
-
-# Ver informações do projeto
-make info
-
-# Ver ajuda
-make help
-```
-
-## 📊 Progresso Atual
-
-### Módulos Implementados
-| Módulo | Progresso | Arquivos | Funções | Testes |
-|--------|-----------|----------|---------|---------|
-| **Estruturas Base** | 100% ✅ | `queue.c/h`, `utils.c/h` | 25+ | 3 suítes |
-| **Sistema Logging** | 100% ✅ | `logger.c/h` | 15 | Integrado |
-| **Sistema Stats** | 100% ✅ | `stats.c/h` | 20 | Integrado |
-| **Configuração** | 100% ✅ | `config.h`, `Makefile` | - | - |
-| **Renderização** | 100% ✅ | `maze.c/h` | 7 | 1 teste |
-| **Lógica Jogador** | 100% ✅ | `player.c/h` | 5 | 1 teste |
-| **IA Fantasmas** | 100% ✅ | `ghost.c/h` | 12 | Integrado |
-| **Loop Principal** | 100% ✅ | `game.c/h`, `main.c` | 8 | Funcional |
-| **Integração Final** | 100% ✅ | Sistema completo | - | - |
-
-### 🎮 Funcionalidades do Jogo
-
-#### Implementado e Funcionando:
-- ✅ **Jogo Pac-Man completo e jogável**
-- ✅ **4 Fantasmas com IA única:** F, G, B, R com comportamentos distintos
-- ✅ **Renderização colorida:** Interface terminal com cores ANSI
-- ✅ **Controles responsivos:** WASD + P (pausar) + Q (sair)
-- ✅ **Sistema de pontuação:** Coleta de pontos com score tracking
-- ✅ **Sistema de vidas:** Multiple lives com game over
-- ✅ **Detecção de colisões:** Player vs fantasmas
-- ✅ **Condições de vitória:** Win quando todos os pontos coletados
-- ✅ **Pausar/Retomar:** Sistema completo de pause
-- ✅ **Logging em tempo real:** Debug messages durante gameplay
-- ✅ **Performance tracking:** Stats de FPS e operations/second
-
-#### Sistemas Avançados:
-- ✅ **Sistema de Logging Profissional:** 5 níveis de log
-- ✅ **Sistema de Estatísticas:** Performance analytics
-- ✅ **Sistema de Profiling:** Benchmark de operações
-- ✅ **Debug Commands:** Comandos integrados durante o jogo
-- ✅ **Save/Load Stats:** Persistência de dados
-
-## 🧪 Testes Implementados
-
-### Suítes de Teste Disponíveis
-- ✅ **Teste Básico:** `make test-basic` - Estruturas fundamentais
-- ✅ **Teste Avançado:** `make test-advanced` - Funcionalidades avançadas  
-- ✅ **Teste Completo:** `make test-complete` - Sistemas integrados
-- ✅ **Teste Player:** `make test-player` - Gameplay integrado
-- ✅ **Cobertura:** 100% das funcionalidades testadas
-
-### Resultados dos Testes
-```
-make test-basic
-make test-advanced
-
-# Manual
-gcc -o test_structs test/test_structs.c src/queue.c src/utils.c
-./test_structs
-
-gcc -o test_advanced test/test_advanced.c src/queue.c src/utils.c
-./test_advanced
-
-gcc -o test_complete test/test_complete.c src/queue.c src/utils.c src/stats.c src/logger.c
-./test_complete
-
-# Teste integrado Player + Maze
-gcc -o test_player test/test_player.c src/player.c src/maze.c src/utils.c src/logger.c src/stats.c src/queue.c -std=c99 -Wall -I src
-./test_player
-```
----
-
-
-## 📊 Progresso Atual
-
-### Módulos Implementados
-| Módulo | Progresso | Arquivos | Funções | Testes |
-|--------|-----------|----------|---------|---------|
-| **Estruturas Base** | 100% ✅ | `queue.c/h`, `utils.c/h` | 25+ | 3 suítes |
-| **Sistema Logging** | 100% ✅ | `logger.c/h` | 15 | Integrado |
-| **Sistema Stats** | 100% ✅ | `stats.c/h` | 20 | Integrado |
-| **Configuração** | 100% ✅ | `config.h`, `Makefile` | - | - |
-| **Renderização** | 100% ✅ | `maze.c/h` | 6 | 1 teste |
-| **Lógica Jogador** | 100% ✅ | `player.c/h` | 5 | 1 teste |
-| **IA Fantasmas** | 🔄 **EM ANDAMENTO** | `ghost.c/h`, `game.c/h` | - | - |
-| **Integração Final** | 🔄 **PRÓXIMO** | `main.c` | - | - |
-
-
-## 📝 Convenções de Código
-
-- **Linguagem:** C (padrão C99)
-- **Nomenclatura:** snake_case para funções e variáveis
-- **Comentários:** Em português
-- **Indentação:** 4 espaços
-- **Headers:** Include guards (#ifndef/#define/#endif)
-- **Logging:** Usar macros `LOG_D()`, `LOG_I()`, etc.
-- **Testes:** Adicionar asserções e testes unitários
-
-
-## 🔍 Debugging e Profiling
-
-### Sistema de Logging
-```c
-#include "logger.h"
-
-// Inicializar (uma vez no main)
-logger_init("game.log", LOG_DEBUG);
-
-// Usar durante o desenvolvimento
-LOG_D("Debug info: %d", value);
-LOG_I("Game started");
-LOG_W("Warning: %s", message);
-LOG_E("Error occurred");
-
-// Finalizar
-logger_shutdown();
-```
-
-### Sistema de Estatísticas
-```c
-#include "stats.h"
-
-// Criar e usar estatísticas
-QueueStats* stats = create_queue_stats();
-update_queue_stats_enqueue(stats, queue_size(queue));
-print_queue_stats(stats);
-```
-
-### Sistema de Profiling
-```c
-#include "stats.h"
-
-// Medir performance
-ProfileData* profile = start_profiling("Operação crítica");
-// ... código a ser medido ...
-end_profiling(profile);
-print_profile_result(profile);
-```
+- **Linguagem:** C (compilado com padrão C99 ou similar).
+- **Nomenclatura:** Predominantemente snake_case para funções e variáveis.
+- **Comentários:** Em português, com o objetivo de explicar lógicas importantes e decisões de design.
+- **Logging:** O sistema de logging (`logger.c/h`) é utilizado para registrar informações de debug (`LOG_D`), eventos de jogo (`LOG_I`), avisos (`LOG_W`) e erros (`LOG_E`) em um arquivo (padrão: `game.log`). O nível de logging pode ser ajustado.
+- **Estatísticas/Profiling:** O código contém referências a um sistema de estatísticas e profiling (`stats.c/h`). Se estas funcionalidades forem mantidas e atualizadas, podem ser usadas para análise de performance do jogo.
 
 ---
-
-**Versão:** 1.0  
-**Data:** Dezembro 2024  
-**Disciplina:** Estruturas de Dados  
-**Status:** 🚧 **Implementando módulo de fantasmas - 75% concluído**
-
+**Versão:** 2.0 (Pós-Refatoração Significativa)
+**Disciplina:** Estruturas de Dados (Contexto Original)
+```

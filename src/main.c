@@ -11,6 +11,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include "config.h"
 
 static GameStatus game_status = PLAYING;
 static int current_level = 1;
@@ -181,41 +182,41 @@ cleanup:
     printf("\n\n");
     
     if (game_status == VICTORY && all_levels_completed) {
-        PRINT_BOLD(32, "    ================================================================\n");
-        PRINT_BOLD(32, "    |                                                              |\n");
-        PRINT_BOLD(32, "    |       ");
-        PRINT_COLOR(33, "P A R A B E N S ,   V O C E   V E N C E U !");
-        PRINT_BOLD(32, "        |\n");
-        PRINT_BOLD(32, "    |                                                              |\n");
-        PRINT_BOLD(32, "    |           ");
+        printf("\033[1;32m    ================================================================\033[0m\n");
+        printf("\033[1;32m    |                                                              |\033[0m\n");
+        printf("\033[1;32m    |       ");
+        printf("\033[33mP A R A B E N S ,   V O C E   V E N C E U !\033[0m");
+        printf("\033[1;32m        |\033[0m\n");
+        printf("\033[1;32m    |                                                              |\033[0m\n");
+        printf("\033[1;32m    |           ");
         printf("\x1b[35mVoce completou todos os %d niveis!\x1b[0m", MAX_LEVELS);
-        PRINT_BOLD(32, "            |\n");
-        PRINT_BOLD(32, "    |                                                              |\n");
-        PRINT_BOLD(32, "    ================================================================\n");
+        printf("\033[1;32m            |\033[0m\n");
+        printf("\033[1;32m    |                                                              |\033[0m\n");
+        printf("\033[1;32m    ================================================================\033[0m\n");
     } else if (game_status == VICTORY) {
-        PRINT_BOLD(32, "    ================================================\n");
-        PRINT_BOLD(32, "    |                                              |\n");
-        PRINT_BOLD(32, "    |            ");
-        PRINT_COLOR(33, "V I T O R I A !");
-        PRINT_BOLD(32, "            |\n");
-        PRINT_BOLD(32, "    |                                              |\n");
-        PRINT_BOLD(32, "    |      ");
+        printf("\033[1;32m    ================================================\033[0m\n");
+        printf("\033[1;32m    |                                              |\033[0m\n");
+        printf("\033[1;32m    |            ");
+        printf("\033[33mV I T O R I A !\033[0m");
+        printf("\033[1;32m            |\033[0m\n");
+        printf("\033[1;32m    |                                              |\033[0m\n");
+        printf("\033[1;32m    |      ");
         printf("\x1b[35mNivel %d completado!\x1b[0m", all_levels_completed ? MAX_LEVELS : current_level -1);
-        PRINT_BOLD(32, "       |\n");
-        PRINT_BOLD(32, "    |                                              |\n");
-        PRINT_BOLD(32, "    ================================================\n");
+        printf("\033[1;32m       |\033[0m\n");
+        printf("\033[1;32m    |                                              |\033[0m\n");
+        printf("\033[1;32m    ================================================\033[0m\n");
     } else {
-        PRINT_BOLD(31, "    ================================================\n");
-        PRINT_BOLD(31, "    |                                              |\n");
-        PRINT_BOLD(31, "    |             ");
-        PRINT_COLOR(33, "G A M E   O V E R");
-        PRINT_BOLD(31, "            |\n");
-        PRINT_BOLD(31, "    |                                              |\n");
-        PRINT_BOLD(31, "    |          ");
-        PRINT_COLOR(36, "Tente novamente na proxima vez!");
-        PRINT_BOLD(31, "       |\n");
-        PRINT_BOLD(31, "    |                                              |\n");
-        PRINT_BOLD(31, "    ================================================\n");    }
+        printf("\033[1;31m    ================================================\033[0m\n");
+        printf("\033[1;31m    |                                              |\033[0m\n");
+        printf("\033[1;31m    |             ");
+        printf("\033[33mG A M E   O V E R\033[0m");
+        printf("\033[1;31m            |\033[0m\n");
+        printf("\033[1;31m    |                                              |\033[0m\n");
+        printf("\033[1;31m    |          ");
+        printf("\x1b[36mTente novamente na proxima vez!\x1b[0m");
+        printf("\033[1;31m       |\033[0m\n");
+        printf("\033[1;31m    |                                              |\033[0m\n");
+        printf("\033[1;31m    ================================================\033[0m\n");    }
     
     printf("\n");
     printf("    +----------------------------------------------------+\n");

@@ -10,15 +10,19 @@
 Direction get_direction_from_input(char input) {
     char upper_input = toupper(input);
     switch (upper_input) {
-        case KEY_MOVE_UP:    return NORTH;
-        case KEY_MOVE_LEFT:  return WEST;
-        case KEY_MOVE_DOWN:  return SOUTH;
-        case KEY_MOVE_RIGHT: return EAST;
+        case KEY_UP:    return NORTH;
+        case KEY_LEFT:  return WEST;
+        case KEY_DOWN:  return SOUTH;
+        case KEY_RIGHT: return EAST;
         default: return DIR_INVALID;
     }
 }
 
 void player_init(Player* player, Position start_pos) {
+    if (!player) {
+        LOG_E("player_init chamado com ponteiro nulo.");
+        return;
+    }
     player->pos = start_pos;
     player->score = 0;
     player->lives = DEFAULT_LIVES;
@@ -29,6 +33,10 @@ void player_init(Player* player, Position start_pos) {
 }
 
 void player_move(Player* player, Maze* maze, char input, Ghost* ghosts, int ghost_count) {
+    if (!player || !maze) {
+        LOG_E("player_move chamado com ponteiro nulo.");
+        return;
+    }
     Direction dir = get_direction_from_input(input);
     if (dir == DIR_INVALID || !is_valid_direction(dir)) {
         return;
@@ -54,7 +62,7 @@ void player_move(Player* player, Maze* maze, char input, Ghost* ghosts, int ghos
         if (item_coletado == SYMBOL_POWER_PELLET) {
             LOG_I("POWER PELLET! Fantasmas assustados!");
             for (int i = 0; i < ghost_count; i++) {
-                if (ghosts[i].is_active && ghosts[i].state != GHOST_EATEN) {
+                if (ghosts && ghosts[i].is_active && ghosts[i].state != GHOST_EATEN) {
                     ghosts[i].state = GHOST_FRIGHTENED;
                     ghosts[i].timer = 0;
                     LOG_D("Fantasma %d (%c) agora FRIGHTENED.", ghosts[i].ghost_id, ghosts[i].symbol);
@@ -64,6 +72,7 @@ void player_move(Player* player, Maze* maze, char input, Ghost* ghosts, int ghos
     }
 
     player->pos = next_pos;
+    player->direction = dir;
 
     static int last_score_at_extra_life_check = 0;
     if (POINTS_FOR_EXTRA_LIFE > 0 && player->score / POINTS_FOR_EXTRA_LIFE > last_score_at_extra_life_check / POINTS_FOR_EXTRA_LIFE) {
@@ -78,6 +87,10 @@ void player_move(Player* player, Maze* maze, char input, Ghost* ghosts, int ghos
 }
 
 void player_lose_life(Player* player, Position start_pos) {
+    if (!player) {
+        LOG_E("player_lose_life chamado com ponteiro nulo.");
+        return;
+    }
     if (player->lives > 0) {
         player->lives--;
         LOG_I("Jogador perdeu uma vida. Vidas restantes: %d", player->lives);

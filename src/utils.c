@@ -299,46 +299,4 @@ void debug_log(const char* format, ...) {
     #endif
 }
 
-// ===== FUNÇÕES DE ESTADO DO JOGO =====
-
-void initialize_game_state(GameState* game) {
-    if (!game) return;
-    
-    // Inicializar RNG
-    srand((unsigned int)time(NULL));
-      // Inicializar player
-    game->player.pos.x = 2;
-    game->player.pos.y = 2;
-    game->player.score = 0;
-    game->player.lives = DEFAULT_LIVES;
-    game->player.symbol = SYMBOL_PLAYER;
-    
-    // Inicializar estado
-    game->map_width = MAX_MAP_WIDTH;
-    game->map_height = MAX_MAP_HEIGHT;
-    game->total_dots = 0;
-    game->collected_dots = 0;
-    game->num_ghosts = 0;
-    game->status = PLAYING;
-    game->level = 1;
-    
-    // Limpar mapa
-    memset(game->map, SYMBOL_EMPTY_SPACE, sizeof(game->map));
-    
-    printf("✅ Estado do jogo inicializado!\n");
-}
-
-void print_game_stats(GameState* game) {
-    if (!game) return;
-    
-    printf("\n╔════════════════════════════════════╗\n");
-    printf("║            ESTATÍSTICAS            ║\n");
-    printf("╚════════════════════════════════════╝\n");
-    printf("📊 Pontuação: %d\n", game->player.score);
-    printf("❤️  Vidas: %d\n", game->player.lives);
-    printf("🎯 Nível: %d\n", game->level);
-    printf("🔴 Pontos: %d/%d\n", game->collected_dots, game->total_dots);
-    printf("🎮 Status: %s\n", game_status_to_string(game->status));
-    printf("═══════════════════════════════════════\n");
-}
 

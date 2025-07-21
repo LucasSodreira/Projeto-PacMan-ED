@@ -86,14 +86,15 @@ void game_loop() {
     srand((unsigned)time(NULL));
 
     bool all_levels_completed = false;
+    int exit_code = 0;
 
-    do {        initialize_level(current_level, &maze, &player, ghosts,
+    do {
+        initialize_level(current_level, &maze, &player, ghosts,
                          &player_start_pos_for_level, ghost_initial_positions_for_level,
                          &active_ghosts_for_level,
                          ghost_move_queue);
-        
         game_status = PLAYING;
-  while (game_status == PLAYING || game_status == PAUSED) {
+        while (game_status == PLAYING || game_status == PAUSED) {
 
             if (game_status == PAUSED) {
                 clear_screen();
@@ -129,7 +130,7 @@ void game_loop() {
                     bool level_is_over_flag = false;
                     update_game(&player, &maze, ghosts, active_ghosts_for_level, &game_status, &level_is_over_flag, player_start_pos_for_level);
 
-                    draw_game(&player, &maze, ghosts, active_ghosts_for_level, game_status);
+                    draw_game(&player, &maze, ghosts, active_ghosts_for_level, game_status, current_level);
                     printf("Nivel: %d | Comandos: WASD/Setas, P (Pausar), Q (Sair)\n", current_level);
                 }
             #else
@@ -144,7 +145,7 @@ void game_loop() {
                     bool level_is_over_flag = false;
                     update_game(&player, &maze, ghosts, active_ghosts_for_level, &game_status, &level_is_over_flag, player_start_pos_for_level);
 
-                    draw_game(&player, &maze, ghosts, active_ghosts_for_level, game_status);
+                    draw_game(&player, &maze, ghosts, active_ghosts_for_level, game_status, current_level);
                     printf("Nivel: %d | Comandos: WASD/Setas, P (Pausar), Q (Sair)\n", current_level);
                 }
             #endif
@@ -168,13 +169,15 @@ void game_loop() {
 
     } while (game_status == VICTORY && !all_levels_completed);
 
+    // Bloco de limpeza de recursos
+cleanup:
     end_profiling(ai_profile);
     logger_game_ended(player.score, (all_levels_completed ? current_level -1 : current_level) );
-    
     destroy_game_stats(game_stats);
     destroy_profile_data(ai_profile);
     destroy_queue(ghost_move_queue);
-    logger_shutdown();    clear_screen();
+    logger_shutdown();
+    clear_screen();
     printf("\n\n");
     
     if (game_status == VICTORY && all_levels_completed) {

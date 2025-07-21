@@ -52,8 +52,6 @@ Ghost dequeue(Queue* queue) {
         .is_active = 0,
         .target = {-1, -1},
         .difficulty = DIFFICULTY_EASY,
-        .path_start = 0,
-        .path_end = 0,
         .scatter_mode = 0,
         .timer = 0
     };
@@ -83,11 +81,16 @@ int is_empty(Queue* queue) {
 
 void destroy_queue(Queue* queue) {
     if (!queue) return;
-    
-    while (!is_empty(queue)) {
-        dequeue(queue);
+    // Libera todos os nós da fila
+    QueueNode* current = queue->front;
+    while (current) {
+        QueueNode* next = current->next;
+        free(current);
+        current = next;
     }
-    
+    queue->front = NULL;
+    queue->rear = NULL;
+    queue->size = 0;
     free(queue);
 }
 
@@ -126,8 +129,6 @@ Ghost queue_peek(Queue* queue) {
         .is_active = 0,
         .target = {-1, -1},
         .difficulty = DIFFICULTY_EASY,
-        .path_start = 0,
-        .path_end = 0,
         .scatter_mode = 0,
         .timer = 0
     };

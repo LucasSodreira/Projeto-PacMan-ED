@@ -250,6 +250,15 @@ make test
 
 ---
 
+## 🚀 **NOVIDADES E MELHORIAS RECENTES**
+
+- **IA dos Fantasmas Aprimorada:** Cada fantasma possui um comportamento único (Blinky persegue, Pinky embosca, Inky calcula vetor, Clyde alterna perseguição/fuga).
+- **HUD Aprimorado:** Exibe nível, score, vidas, estado e direção do Pac-Man com destaque em cores.
+- **Robustez:** Tratamento de erros aprimorado, mensagens claras ao usuário, liberação correta de recursos.
+- **Código Limpo:** Headers e funções enxutos, sem código morto ou duplicado, fácil de manter e expandir.
+
+---
+
 ## 👥 **EQUIPE DE DESENVOLVIMENTO**
 
 | Membro | Responsabilidade Principal | Módulos |

@@ -939,6 +939,17 @@ Este projeto serve como uma sólida demonstração de que conceitos teóricos de
 
 </div>
 
+## 🚀 **MELHORIAS E REFINAMENTOS RECENTES**
+
+- **IA dos Fantasmas Aprimorada:** Cada fantasma agora possui um comportamento único, tornando o desafio mais próximo do clássico:
+  - Blinky (vermelho): perseguição direta.
+  - Pinky (rosa): emboscada à frente do Pac-Man.
+  - Inky (azul): alvo calculado com base em Blinky e Pac-Man.
+  - Clyde (verde): alterna perseguição/fuga.
+- **HUD Aprimorado:** Exibe nível, score, vidas, estado e direção do Pac-Man, com cores para facilitar leitura.
+- **Robustez:** Tratamento de erros aprimorado, mensagens claras ao usuário, liberação correta de recursos e checagem de ponteiros nulos.
+- **Código Limpo:** Headers e funções enxutos, sem código morto ou duplicado, fácil de manter e expandir.
+
 ## ✨ Funcionalidades Chave e Decisões de Design (Pós-Refatoração)
 
 -   **Carregamento Dinâmico de Mapas:** Os níveis do jogo são definidos em arquivos de texto (`maps/levelX.txt`). A função `load_maze` em `maze.c` é responsável por ler esses arquivos, interpretar os símbolos (paredes, pontos, power pellets, posições iniciais do jogador e fantasmas) e popular a estrutura `Maze`. Isso permite fácil adição ou modificação de níveis sem recompilar o jogo. Um mapa padrão é usado como fallback se um arquivo de nível não for encontrado.

@@ -141,28 +141,33 @@ void update_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count
     }
 }
 
-void draw_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus game_status) {
+void draw_game(Player* player, Maze* maze_data, Ghost* ghosts, int ghost_count, GameStatus game_status, int current_level) {
     clear_screen();
-    
-    // Header com informações do jogo usando caracteres ASCII simples
+
+    // HUD aprimorado
+    printf("%s", COLOR_BOLD);
     printf("    +");
     for (int i = 0; i < maze_data->width; i++) printf("-");
     printf("+\n");
-      // Linha de status
-    char status_buffer[200];
-    snprintf(status_buffer, sizeof(status_buffer), " Score: %d | Vidas: %d | Status: %s", 
-             player->score, player->lives, game_status_to_string(game_status));
-    
+
+    // Linha de status principal
+    char status_buffer[256];
+    snprintf(status_buffer, sizeof(status_buffer),
+        "%sNível:%s %d  %sScore:%s %d  %sVidas:%s %d  %sEstado:%s %s  %sDireção:%s %s",
+        COLOR_YELLOW, COLOR_RESET, current_level,
+        COLOR_CYAN, COLOR_RESET, player->score,
+        COLOR_GREEN, COLOR_RESET, player->lives,
+        COLOR_MAGENTA, COLOR_RESET, game_status_to_string(game_status),
+        COLOR_BLUE, COLOR_RESET, direction_to_string(player->direction));
+
     printf("    |%s", status_buffer);
-    
-    // Preencher o resto da linha até a largura do maze
-    int current_len = strlen(status_buffer);
+    int current_len = (int)strlen(status_buffer);
     for (int i = current_len; i < maze_data->width; i++) printf(" ");
     printf("|\n");
-    
+
     printf("    +");
     for (int i = 0; i < maze_data->width; i++) printf("-");
-    printf("+\n");
+    printf("+%s\n", COLOR_RESET);
 
     // Renderizar o labirinto
     for (int y = 0; y < maze_data->height; y++) {
@@ -259,7 +264,8 @@ void process_player_input(Player* player, Maze* maze_data, Ghost* ghosts, int gh
             // Mover fantasmas após o movimento do jogador
             for (int i = 0; i < MAX_GHOSTS; i++) {
                 if (ghosts[i].is_active) {
-                    Direction new_dir = calculate_next_direction(&ghosts[i], player->pos, maze_data);
+                    // Passar direção do Pac-Man e array de fantasmas para a IA
+                    Direction new_dir = calculate_next_direction(&ghosts[i], player->pos, player->direction, ghosts, maze_data);
                     if (new_dir != DIR_INVALID) {
                         Position next_pos = get_next_position(ghosts[i].pos, new_dir);
                         if (is_valid_move_ghost(next_pos, maze_data)) {

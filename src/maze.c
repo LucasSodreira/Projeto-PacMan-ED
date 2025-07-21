@@ -48,6 +48,7 @@ bool load_maze(Maze* maze, int level, Position* out_player_start_pos, Position o
 
     if (bytes_written < 0 || (size_t)bytes_written >= sizeof(filename)) {
         LOG_E("Erro ao criar nome do arquivo de mapa para o nível %d ou nome muito longo.", level);
+        printf("[ERRO] Nome de arquivo de mapa inválido para o nível %d.\n", level);
         return false;
     }
 
@@ -55,6 +56,7 @@ bool load_maze(Maze* maze, int level, Position* out_player_start_pos, Position o
 
     if (!file) {
         LOG_E("Falha ao abrir o arquivo de mapa: %s.", filename);
+        printf("[ERRO] Não foi possível abrir o arquivo de mapa: %s\n", filename);
         return false;
     }
 
@@ -127,11 +129,19 @@ bool load_maze(Maze* maze, int level, Position* out_player_start_pos, Position o
 
     if (out_player_start_pos->x == -1) {
         LOG_W("Posição do jogador 'P' não encontrada no mapa '%s'. Usando padrão {1,1}.", filename);
+        printf("[ERRO] Posição do jogador 'P' não encontrada no mapa '%s'. Usando padrão {1,1}.\n", filename);
         out_player_start_pos->x = 1;
         out_player_start_pos->y = 1;
         if (maze->grid[out_player_start_pos->y][out_player_start_pos->x] == SYMBOL_WALL) {
              maze->grid[out_player_start_pos->y][out_player_start_pos->x] = SYMBOL_EMPTY_SPACE;
         }
+    }
+
+    // Validação extra: se não houver pontos, o mapa é inválido
+    if (maze->total_points == 0) {
+        LOG_E("Mapa '%s' inválido: nenhum ponto coletável encontrado.", filename);
+        printf("[ERRO] Mapa '%s' inválido: nenhum ponto coletável encontrado.\n", filename);
+        return false;
     }
 
     LOG_I("Mapa '%s' carregado. Jogador em: (%d,%d), Fantasmas: %d, Pontos: %d.",

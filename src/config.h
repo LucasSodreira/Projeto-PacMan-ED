@@ -8,20 +8,19 @@
 
 // ===== CONFIGURAÇÕES DE INTERFACE =====
 #define USE_COLORS 1             // Habilita cores ANSI (se disponível)
-#define USE_UNICODE 0            // Desabilita Unicode para compatibilidade
-#define USE_SIMPLE_BORDERS 1     // Usa bordas ASCII simples
 #define CMD_COMPATIBLE 1         // Modo compatível com CMD do Windows
+#define USE_SIMPLE_BORDERS 1     // Usa bordas ASCII simples
 
 // ===== CARACTERES DE BORDA ASCII SIMPLES =====
 #define BORDER_HORIZONTAL "-"
-#define BORDER_VERTICAL "|"
-#define BORDER_TOP_LEFT "+"
-#define BORDER_TOP_RIGHT "+"
-#define BORDER_BOTTOM_LEFT "+"
+#define BORDER_VERTICAL   "|"
+#define BORDER_TOP_LEFT   "+"
+#define BORDER_TOP_RIGHT  "+"
+#define BORDER_BOTTOM_LEFT  "+"
 #define BORDER_BOTTOM_RIGHT "+"
-#define BORDER_CROSS "+"
+#define BORDER_CROSS      "+"
 
-// ===== MACROS DE CORES CONDICIONAIS =====
+// ===== MACROS DE CORES ANSI =====
 #if USE_COLORS
     #define COLOR_RESET      "\033[0m"
     #define COLOR_BOLD       "\033[1m"
@@ -39,7 +38,6 @@
     #define COLOR_BRIGHT_MAGENTA "\033[95m"
     #define COLOR_BRIGHT_CYAN   "\033[96m"
 #else
-    // Quando cores estão desabilitadas
     #define COLOR_RESET      ""
     #define COLOR_BOLD       ""
     #define COLOR_RED        ""
@@ -89,6 +87,7 @@
 #define POINTS_PER_POWER_PELLET 50
 #define BONUS_LEVEL_COMPLETE 100
 #define POINTS_FOR_EXTRA_LIFE 1000
+#define POINTS_PER_GHOST_EATEN 200
 
 // Configurações de vidas
 #define DEFAULT_LIVES 3
@@ -104,16 +103,13 @@
 #define MAX_LEVELS 10
 #define MAX_GHOSTS 4
 #define GHOST_RESPAWN_TIME 5     // Segundos para reaparecer
-
-// Configurações de fantasmas
 #define SCATTER_CHASE_INTERVAL 100   // Ticks entre mudanças de modo scatter/chase
 #define FRIGHTENED_MODE_DURATION 150 // Duração do modo frightened em ticks
-#define POINTS_PER_GHOST_EATEN 200   // Pontos por comer um fantasma
 
 // ===== SÍMBOLOS DO JOGO =====
 #define SYMBOL_PLAYER 'P'
 #define SYMBOL_GHOST_RED 'F'
-#define SYMBOL_GHOST_GREEN 'G' 
+#define SYMBOL_GHOST_GREEN 'G'
 #define SYMBOL_GHOST_BLUE 'B'
 #define SYMBOL_GHOST_PINK 'R'
 #define SYMBOL_WALL '#'
@@ -122,43 +118,6 @@
 #define SYMBOL_EMPTY_SPACE ' '
 #define SYMBOL_GHOST_FRIGHTENED 'A' // 'A' para Assustado
 #define SYMBOL_GHOST_EATEN 'e'      // 'e' para olhos/comido (eaten)
-#define SYMBOL_WALL_CHAR SYMBOL_WALL // Para consistência em draw_game se SYMBOL_WALL_CHAR for usado
-
-// ===== CORES ANSI =====
-#define COLOR_PLAYER 33      // Amarelo
-#define COLOR_GHOST_RED 31   // Vermelho
-#define COLOR_GHOST_GREEN 32 // Verde
-#define COLOR_GHOST_BLUE 34  // Azul
-#define COLOR_GHOST_PINK 35  // Magenta
-#define COLOR_GHOST_FRIGHTENED 36 // Ciano
-#define COLOR_GHOST_EATEN 37      // Branco
-#define COLOR_WALL 37        // Branco
-#define COLOR_DOT 36         // Ciano
-#define COLOR_POWER_PELLET 33 // Amarelo
-
-// ===== CORES PARA INTERFACE =====
-#define COLOR_TITLE 33       // Amarelo brilhante
-#define COLOR_SUCCESS 32     // Verde
-#define COLOR_ERROR 31       // Vermelho
-#define COLOR_INFO 36        // Ciano
-#define COLOR_WARNING 33     // Amarelo
-#define COLOR_ACCENT 35      // Magenta
-#define COLOR_BORDER 37      // Branco
-
-// ===== MACROS DE FORMATAÇÃO =====
-#if USE_COLORS
-    #define ANSI_COLOR(code) "\x1b[" #code "m"
-    #define ANSI_BOLD(code) "\x1b[1;" #code "m"
-    #define ANSI_RESET "\x1b[0m"
-    #define PRINT_COLOR(color, text) printf(ANSI_COLOR(color) text ANSI_RESET)
-    #define PRINT_BOLD(color, text) printf(ANSI_BOLD(color) text ANSI_RESET)
-#else
-    #define ANSI_COLOR(code) ""
-    #define ANSI_BOLD(code) ""
-    #define ANSI_RESET ""
-    #define PRINT_COLOR(color, text) printf(text)
-    #define PRINT_BOLD(color, text) printf(text)
-#endif
 
 // ===== CONTROLES =====
 #define KEY_UP 'W'
@@ -167,12 +126,6 @@
 #define KEY_RIGHT 'D'
 #define KEY_QUIT 'Q'
 #define KEY_PAUSE 'P'
-
-// Controles de movimento
-#define KEY_MOVE_UP 'W'
-#define KEY_MOVE_DOWN 'S'
-#define KEY_MOVE_LEFT 'A'
-#define KEY_MOVE_RIGHT 'D'
 
 // ===== CONFIGURAÇÕES DE DEBUG =====
 #ifdef DEBUG
@@ -202,56 +155,6 @@
 
 // ===== CONFIGURAÇÕES DE MEMÓRIA =====
 #define INITIAL_QUEUE_SIZE 10
-
-// ===== CONFIGURAÇÕES DE DISPLAY PARA CMD WINDOWS =====
-#ifdef _WIN32
-    // Caracteres compatíveis com CMD do Windows
-    #define BORDER_TOP_LEFT "+"
-    #define BORDER_TOP_RIGHT "+"
-    #define BORDER_BOTTOM_LEFT "+"
-    #define BORDER_BOTTOM_RIGHT "+"
-    #define BORDER_HORIZONTAL "-"
-    #define BORDER_VERTICAL "|"
-    #define WALL_CHAR "#"
-    #define DOT_CHAR "."
-    #define POWER_PELLET_CHAR "O"
-    #define PLAYER_CHAR "P"
-    #define GHOST_CHAR_RED "R"
-    #define GHOST_CHAR_GREEN "G"
-    #define GHOST_CHAR_BLUE "B"
-    #define GHOST_CHAR_PINK "P"
-    #define EMPTY_CHAR " "
-#else
-    // Caracteres Unicode para sistemas Unix/Linux
-    #define BORDER_TOP_LEFT "╔"
-    #define BORDER_TOP_RIGHT "╗"
-    #define BORDER_BOTTOM_LEFT "╚"
-    #define BORDER_BOTTOM_RIGHT "╝"
-    #define BORDER_HORIZONTAL "═"
-    #define BORDER_VERTICAL "║"
-    #define WALL_CHAR "█"
-    #define DOT_CHAR "·"
-    #define POWER_PELLET_CHAR "●"
-    #define PLAYER_CHAR "Ⓟ"
-    #define GHOST_CHAR_RED "👻"
-    #define GHOST_CHAR_GREEN "👻"
-    #define GHOST_CHAR_BLUE "👻"
-    #define GHOST_CHAR_PINK "👻"
-    #define EMPTY_CHAR " "
-#endif
-
-// ===== CONFIGURAÇÕES DE CORES PARA CMD =====
-#ifdef _WIN32
-    // Habilitar cores ANSI no Windows 10+ CMD
-    #ifndef USE_COLORS
-        #define USE_COLORS 1
-    #endif
-#else
-    // Habilitar cores ANSI em sistemas Unix/Linux
-    #ifndef USE_COLORS
-        #define USE_COLORS 1
-    #endif
-#endif
 
 #endif // CONFIG_H
 

@@ -18,6 +18,10 @@ static Logger g_logger = {0};
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 int logger_init(const char* filename, LogLevel min_level) {
+    if (!filename) {
+        printf("Logger: nome de arquivo nulo.\n");
+        return 0;
+    }
     if (g_logger.is_initialized) {
         printf("Logger já inicializado\n");
         return 1;
@@ -64,6 +68,7 @@ void logger_shutdown() {
     
     if (g_logger.config.log_file && g_logger.config.log_file != stdout) {
         fclose(g_logger.config.log_file);
+        g_logger.config.log_file = NULL;
     }
     
     g_logger.is_initialized = 0;
@@ -83,7 +88,11 @@ void logger_set_colored_output(int enabled) {
 }
 
 void logger_log(LogLevel level, const char* function, const char* format, ...) {
-    if (!g_logger.is_initialized || level < g_logger.config.min_level) {
+    if (!g_logger.is_initialized) {
+        printf("[LOGGER] Logger não inicializado!\n");
+        return;
+    }
+    if (level < g_logger.config.min_level) {
         return;
     }
     

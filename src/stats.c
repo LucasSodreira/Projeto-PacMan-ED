@@ -207,9 +207,8 @@ void load_game_stats_from_file(GameStats* stats, const char* filename) {
 }
 
 void destroy_game_stats(GameStats* stats) {
-    if (stats) {
-        free(stats);
-    }
+    if (!stats) return;
+    // Se houver campos alocados dinamicamente no futuro, liberar aqui
 }
 
 ProfileData* start_profiling(const char* operation_name) {
@@ -244,9 +243,8 @@ void print_profile_result(ProfileData* profile) {
 }
 
 void destroy_profile_data(ProfileData* profile) {
-    if (profile) {
-        free(profile);
-    }
+    if (!profile) return;
+    // Se houver campos alocados dinamicamente no futuro, liberar aqui
 }
 
 void analyze_queue_performance(QueueStats* stats) {

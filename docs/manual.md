@@ -342,6 +342,19 @@ Os mapas são arquivos de texto (.txt) na pasta `maps/`:
 
 ---
 
+## 🚀 **NOVIDADES E MELHORIAS RECENTES**
+
+- **IA dos Fantasmas Aprimorada:** Cada fantasma agora possui um comportamento único, tornando o jogo mais desafiador e fiel ao clássico:
+  - Blinky (vermelho): persegue diretamente o Pac-Man.
+  - Pinky (rosa): tenta emboscar à frente do Pac-Man.
+  - Inky (azul): usa a posição do Blinky e do Pac-Man para calcular seu alvo.
+  - Clyde (verde): alterna entre perseguir e fugir dependendo da distância.
+- **HUD Aprimorado:** O topo da tela mostra o nível atual, score, vidas, estado do jogo e a direção do Pac-Man, tudo com destaque em cores.
+- **Robustez:** O jogo agora trata erros de arquivos, mapas inválidos e problemas de memória de forma amigável, exibindo mensagens claras ao usuário e registrando detalhes no log. Todos os recursos são liberados corretamente ao final do jogo.
+- **Código Limpo:** O código-fonte foi revisado, removendo funções não utilizadas, duplicidades e mantendo apenas o essencial para facilitar manutenção e expansão.
+
+---
+
 ## 🔧 **TROUBLESHOOTING**
 
 ### **Problemas de Compilação**

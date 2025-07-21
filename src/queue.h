@@ -1,9 +1,8 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <stdbool.h>
-#include "utils.h"
 #include "ghost.h"
+#include <stdbool.h>
 
 typedef struct QueueNode {
     Ghost ghost;
@@ -16,13 +15,12 @@ typedef struct {
     int size;
 } Queue;
 
-Queue* create_queue();
+Queue* create_queue(void);
 bool enqueue(Queue* queue, Ghost ghost);
 Ghost dequeue(Queue* queue);
 int is_empty(Queue* queue);
 void destroy_queue(Queue* queue);
 void print_queue(Queue* queue);
-
 int queue_size(Queue* queue);
 Ghost queue_peek(Queue* queue);
 int is_full(Queue* queue, int max_size);
@@ -32,4 +30,4 @@ int count_active_ghosts(Queue* queue);
 Queue* clone_queue(Queue* source);
 Ghost* queue_to_array(Queue* queue, int* array_size);
 
-#endif
+#endif // QUEUE_H

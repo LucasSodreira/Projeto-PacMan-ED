@@ -60,34 +60,17 @@ struct Position {
 
 struct Player {
     Position pos;
+    Direction direction;
     int score;
     int lives;
     char symbol;
 };
 
-
-
-
-// ===== ESTRUTURA DE ESTADO DO JOGO (sem Ghost para evitar circular dependency) =====
-typedef struct {
-    char map[MAX_MAP_SIZE][MAX_MAP_SIZE];
-    int map_width;
-    int map_height;
-    Player player;
-    int total_dots;
-    int collected_dots;
-    int num_ghosts;
-    GameStatus status;
-    int level;
-} GameState;
-
-// ===== FUNÇÕES DE SISTEMA =====
+// Funções principais realmente usadas
 void clear_screen(void);
 void print_instructions(void);
 char get_user_input(void);
-void setup_console(void);  // Nova função para configurar o console
-
-// ===== FUNÇÕES DE POSIÇÃO =====
+void setup_console(void);
 int is_valid_position(int x, int y, int width, int height);
 int manhattan_distance(Position a, Position b);
 int positions_equal(Position a, Position b);
@@ -114,8 +97,8 @@ int random_range(int min, int max);
 void debug_log(const char* format, ...);
 
 // ===== FUNÇÕES DE ESTADO DO JOGO =====
-void initialize_game_state(GameState* game);
-void print_game_stats(GameState* game);
+// void initialize_game_state(GameState* game);
+// void print_game_stats(GameState* game);
 
 // ===== FUNÇÕES DE INICIALIZAÇÃO DE SISTEMA =====
 // Movidas para stats.h para evitar dependências circulares
